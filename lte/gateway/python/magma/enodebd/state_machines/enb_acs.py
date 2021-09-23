@@ -190,7 +190,18 @@ class EnodebAcsStateMachine(ABC):
         Send a request to reboot the eNodeB ASAP
         """
         pass
-
+    @abstractmethod
+    def factory_reset_asap(self) -> None:
+        """
+        Send a request to factoryRest the eNodeB ASAP
+        """
+        pass
+    @abstractmethod
+    def download_asap(self) -> None:
+        """
+        Send a request to download the eNodeB ASAP
+        """
+        pass
     @abstractmethod
     def is_enodeb_connected(self) -> bool:
         pass

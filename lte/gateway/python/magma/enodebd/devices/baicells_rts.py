@@ -46,6 +46,10 @@ from magma.enodebd.state_machines.enb_acs_states import (
     WaitInformState,
     WaitRebootResponseState,
     WaitSetParameterValuesState,
+    WaitFactoryResetResponseState,
+    SendFactoryResetState,
+    SendDownloadState,
+    WaitDownloadResponseState,
 )
 
 
@@ -56,7 +60,10 @@ class BaicellsRTSHandler(BasicEnodebAcsStateMachine):
     ) -> None:
         self._state_map = {}
         super().__init__(service)
-
+    def factory_reset_asap(self) -> None:
+        self.transition('factory_reset')
+    def download_asap(self) -> None:
+        self.transition('download')
     def reboot_asap(self) -> None:
         self.transition('reboot')
 
@@ -83,9 +90,13 @@ class BaicellsRTSHandler(BasicEnodebAcsStateMachine):
             'end_session': EndSessionState(self),
             'reboot': BaicellsSendRebootState(self, when_done='wait_reboot'),
             'wait_reboot': WaitRebootResponseState(self, when_done='wait_inform_post_reboot'),
+            'factory_reset': SendFactoryResetState(self, when_done='wait_factory_reset'),
+            'wait_factory_reset': WaitFactoryResetResponseState(self, when_done='wait_inform_post_reboot'),
             #'wait_post_reboot_inform': WaitInformMRebootState(self, when_done='wait_empty_post_reboot', when_timeout='wait_inform_post_reboot'),
             'wait_inform_post_reboot': WaitInformState(self, when_done='wait_empty_post_reboot', when_boot=None),
             'wait_empty_post_reboot': WaitEmptyMessageState(self, when_done='get_transient_params', when_missing='check_optional_params'),
+            'download': SendDownloadState(self, when_done='wait_download'),
+            'wait_download': WaitDownloadResponseState(self, when_done='wait_inform_post_reboot'),
             # The states below are entered when an unexpected message type is
             # received
             'unexpected_fault': ErrorState(self),

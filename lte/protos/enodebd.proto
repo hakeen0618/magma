@@ -94,7 +94,24 @@ message SingleEnodebStatus {
   string fsm_state = 12;
   StatusProperty rf_tx_desired = 13;
 }
+message DownloadRequest {
+  string file_type = 1;
+  string url = 2;
+  string user_name = 3;
+  string password = 4;
+  string file_size = 5;
+  string target_file_name = 6;
+  uint32 delay_seconds = 7;
+  string success_url = 8;
+  string failure_url = 9;
+  string device_serial = 10;
+}
 
+message DownloadResponse {
+  uint32 status = 1;
+  string start_time = 2;
+  string complete_time = 3;
+}
 // --------------------------------------------------------------------------
 // Enodebd service definition.
 // --------------------------------------------------------------------------
@@ -116,6 +133,12 @@ service Enodebd {
 
   // Reboot every connected eNodeB
   rpc RebootAll (magma.orc8r.Void) returns (magma.orc8r.Void);
+
+  // factorySet eNodeB
+  rpc FactoryReset (EnodebIdentity) returns (magma.orc8r.Void);
+
+  // download files to dNodeB
+  rpc Download (DownloadRequest) returns (DownloadResponse);
 
   // Get current status
   rpc GetStatus (magma.orc8r.Void) returns (magma.orc8r.ServiceStatus);

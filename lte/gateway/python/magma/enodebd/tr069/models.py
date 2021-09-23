@@ -313,11 +313,15 @@ class DownloadResponse(Tr069ComplexModel):
     _type_info["StartTime"] = DateTime
     _type_info["CompleteTime"] = DateTime
 
+class FactoryReset(Tr069ComplexModel):
+    pass
 
+class FactoryResetResponse(Tr069ComplexModel):
+    _type_info = odict()
+    _type_info["DummyField"] = UnsignedInteger
 class Reboot(Tr069ComplexModel):
     _type_info = odict()
     _type_info["CommandKey"] = CommandKeyType
-
 
 class RebootResponse(Tr069ComplexModel):
     # Dummy field required because spyne does not allow 'bare' RPC function with

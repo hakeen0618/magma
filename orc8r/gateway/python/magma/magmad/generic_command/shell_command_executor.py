@@ -35,6 +35,8 @@ class ShellCommandExecutor(CommandExecutor):
             loop: asyncio.AbstractEventLoop,
     ) -> None:
         super().__init__(config, loop)
+        logging.info('-------------------------------config')
+        logging.info(config)
         self._dispatch_table = get_shell_commands_from_config(config)
 
     def get_command_dispatch(
@@ -53,7 +55,8 @@ def get_shell_commands_from_config(
     shell_commands = config\
         .get('generic_command_config', {})\
         .get('shell_commands', {})
-
+    logging.info('*****************************')
+    logging.info(shell_commands)
     command_dispatch_table = {}
 
     for shell_command in shell_commands:
@@ -85,7 +88,8 @@ async def _run_subprocess(
     cmd_str = cmd
     if allow_params:
         cmd_str = cmd.format(*params.get('shell_params', []))
-
+    logging.info('----------------------')
+    logging.info(type(cmd))
     logging.info("Running command: %s", cmd_str)
 
     cmd_list = shlex.split(cmd_str)

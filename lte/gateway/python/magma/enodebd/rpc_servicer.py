@@ -10,7 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import syslog
 from typing import Any
 
 import grpc
@@ -21,6 +21,8 @@ from lte.protos.enodebd_pb2 import (
     GetParameterResponse,
     SetParameterRequest,
     SingleEnodebStatus,
+    DownloadRequest,
+    DownloadResponse,
 )
 from lte.protos.enodebd_pb2_grpc import (
     EnodebdServicer,
@@ -111,7 +113,22 @@ class EnodebdRpcServicer(EnodebdServicer):
         data_model = handler.data_model
         param_name = data_model.get_parameter_name_from_path(parameter_path)
         handler.set_parameter_asap(param_name, value)
+    @return_void
+    def FactoryReset(self, request: EnodebIdentity, context=None) -> None:
+        """ Factory reset eNodeB """
+        print(request.device_serial)
+        handler = self._get_handler(request.device_serial)
+        handler.factory_reset_asap()
 
+    def Download(self, request: DownloadRequest, context: Any) -> DownloadResponse:
+        """ Download file to eNodeB"""
+        download_resp = DownloadResponse()
+        handler = self._get_handler(request.device_serial)
+        handler.download_asap()
+        download_resp.status=0
+        download_resp.start_time=''
+        download_resp.complete_time=''
+        return  download_resp
     @return_void
     def Reboot(self, request: EnodebIdentity, context=None) -> None:
         """ Reboot eNodeB """

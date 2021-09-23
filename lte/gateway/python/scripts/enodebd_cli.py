@@ -19,7 +19,7 @@ from lte.protos.enodebd_pb2 import (
     EnodebIdentity,
     GetParameterRequest,
     SetParameterRequest,
-    SingleEnodebStatus,
+    SingleEnodebStatus, DownloadRequest,
 )
 from lte.protos.enodebd_pb2_grpc import EnodebdStub
 from magma.common.rpc_utils import grpc_wrapper
@@ -76,6 +76,19 @@ def reboot_enodeb(client, args):
 def reboot_all_enodeb(client, args):
     client.RebootAll(Void())
 
+@grpc_wrapper
+def factory_reset_enodeb(client, args):
+    req = EnodebIdentity()
+    req.device_serial = args.device_serial
+    client.FactoryReset(req)
+@grpc_wrapper
+def download_enodeb(client, args):
+    req = DownloadRequest()
+    req.device_serial =args.device_serial
+    req.file_type = args.file_type
+    req.url = args.url
+    req.user_name = args.password
+    client.Download(req)
 
 @grpc_wrapper
 def get_status(client, args):
@@ -238,7 +251,30 @@ def create_parser():
     parser_config_enodeb.add_argument(
         'device_serial', help='eNodeB Serial ID',
     )
-
+    parser_facetory_reset_enodeb = subparsers.add_parser(
+        'factory_reset_enodeb', help='Factory Reset eNodeb',
+    )
+    parser_facetory_reset_enodeb.add_argument(
+        'device_serial', help='eNodeB Serial ID',
+    )
+    parser_download_enodeb = subparsers.add_parser(
+        'download_enodeb', help='eNodeB Download',
+    )
+    parser_download_enodeb.add_argument(
+        'device_serial', help='eNodeB Serial ID',
+    )
+    parser_download_enodeb.add_argument(
+        'file_type', help='file type download',
+    )
+    parser_download_enodeb.add_argument(
+        'url', help='download from server url',
+    )
+    parser_download_enodeb.add_argument(
+        'user_name', help='download user auth',
+    )
+    parser_download_enodeb.add_argument(
+        'password', help='download user password',
+    )
     parser_reboot_enodeb = subparsers.add_parser(
         'reboot_enodeb', help='Reboot eNodeB',
     )
@@ -269,6 +305,8 @@ def create_parser():
     parser_get_parameter.set_defaults(func=get_parameter)
     parser_set_parameter.set_defaults(func=set_parameter)
     parser_config_enodeb.set_defaults(func=configure_enodeb)
+    parser_facetory_reset_enodeb.set_defaults(func=factory_reset_enodeb)
+    parser_download_enodeb.set_defaults(func=download_enodeb)
     parser_reboot_enodeb.set_defaults(func=reboot_enodeb)
     parser_reboot_all_enodeb.set_defaults(func=reboot_all_enodeb)
     parser_get_status.set_defaults(func=get_status)
