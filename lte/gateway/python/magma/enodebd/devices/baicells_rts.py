@@ -15,7 +15,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 
 from magma.common.service import MagmaService
 from magma.enodebd.data_models import transform_for_enb, transform_for_magma
-from magma.enodebd.data_models.data_model import DataModel, TrParam
+from magma.enodebd.data_models.data_model import DataModel, TrParam, InvalidTrParamPath
 from magma.enodebd.data_models.data_model_parameters import (
     ParameterName,
     TrParameterType,
@@ -31,6 +31,7 @@ from magma.enodebd.state_machines.enb_acs_states import (
     CheckOptionalParamsState,
     DeleteObjectsState,
     EnbSendRebootState,
+    EnbSendDownloadState,
     EndSessionState,
     EnodebAcsState,
     ErrorState,
@@ -42,6 +43,8 @@ from magma.enodebd.state_machines.enb_acs_states import (
     WaitGetObjectParametersState,
     WaitGetParametersState,
     WaitGetTransientParametersState,
+    WaitInformMDownloadState,
+    WaitDownloadResponseState,
     WaitInformMRebootState,
     WaitInformState,
     WaitRebootResponseState,
@@ -86,6 +89,13 @@ class BaicellsRTSHandler(BasicEnodebAcsStateMachine):
             'wait_post_reboot_inform': WaitInformMRebootState(self, when_done='wait_empty_post_reboot', when_timeout='wait_inform_post_reboot'),
             'wait_inform_post_reboot': WaitInformState(self, when_done='wait_empty_post_reboot', when_boot=None),
             'wait_empty_post_reboot': WaitEmptyMessageState(self, when_done='get_transient_params', when_missing='check_optional_params'),
+            'download': EnbSendDownloadState(self, when_done='wait_download'),
+            'wait_download': WaitDownloadResponseState(self, when_done='wait_inform_post_download'),
+            #'wait_post_download_inform': WaitInformMDownloadState(self, when_done='wait_empty_post_download',
+            #                                                  when_timeout='wait_inform_post_download'),
+            'wait_inform_post_download': WaitInformState(self, when_done='wait_empty_post_download', when_boot=None),
+            'wait_empty_post_download': WaitEmptyMessageState(self, when_done='get_transient_params',
+                                                            when_missing='check_optional_params'),
             # The states below are entered when an unexpected message type is
             # received
             'unexpected_fault': ErrorState(self),
@@ -220,7 +230,25 @@ class BaicellsRTSTrDataModel(DataModel):
         ParameterName.PERF_MGMT_UPLOAD_URL: TrParam(
             DEVICE_PATH + 'FAP.PerfMgmt.Config.1.URL', False, TrParameterType.STRING, False,
         ),
-
+        # download params that don't have tr69 representation.
+        ParameterName.DOWNLOAD_URL: TrParam(
+            InvalidTrParamPath, False, TrParameterType.STRING, False,
+        ),
+        ParameterName.DOWNLOAD_USER: TrParam(
+            InvalidTrParamPath, False, TrParameterType.STRING, False,
+        ),
+        ParameterName.DOWNLOAD_PASSWORD: TrParam(
+            InvalidTrParamPath, False, TrParameterType.STRING, False,
+        ),
+        ParameterName.DOWNLOAD_FILENAME: TrParam(
+            InvalidTrParamPath, False, TrParameterType.STRING, False,
+        ),
+        ParameterName.DOWNLOAD_FILESIZE: TrParam(
+            InvalidTrParamPath, False, TrParameterType.UNSIGNED_INT, False,
+        ),
+        ParameterName.DOWNLOAD_MD5: TrParam(
+            InvalidTrParamPath, False, TrParameterType.STRING, False,
+        ),
     }
 
     NUM_PLMNS_IN_CONFIG = 6
@@ -285,6 +313,7 @@ class BaicellsRTSTrDataModel(DataModel):
         names = list(
             filter(
                 lambda x: (not str(x).startswith('PLMN'))
+                and (not str(x).startswith('Download'))
                 and (str(x) not in excluded_params),
                 cls.PARAMETERS.keys(),
             ),

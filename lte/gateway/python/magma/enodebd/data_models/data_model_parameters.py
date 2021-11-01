@@ -85,6 +85,13 @@ class ParameterName():
     PERF_MGMT_USER = 'Perf mgmt username'
     PERF_MGMT_PASSWORD = 'Perf mgmt password'
 
+    # Download support parameters
+    DOWNLOAD_URL = 'Download file server url'
+    DOWNLOAD_USER = 'Download user account'
+    DOWNLOAD_PASSWORD = 'Download user password'
+    DOWNLOAD_FILENAME = 'Download target file name'
+    DOWNLOAD_FILESIZE = 'Download file size'
+    DOWNLOAD_MD5 = 'Download md check'
 
 class TrParameterType():
     BOOLEAN = 'boolean'

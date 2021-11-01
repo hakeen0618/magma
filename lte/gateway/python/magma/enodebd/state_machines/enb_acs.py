@@ -218,3 +218,13 @@ class EnodebAcsStateMachine(ABC):
     @abstractmethod
     def stop_state_machine(self) -> None:
         pass
+
+    def download_asap(self, url: str, user_name: str, password: str, target_file_name: str, file_size: int, md5: str) -> None:
+        if url is not None:
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_URL, url)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_USER, user_name)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_PASSWORD, password)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_FILENAME, target_file_name)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_FILESIZE, file_size)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_MD5, md5)
+        self.transition('download')

@@ -56,6 +56,8 @@ def get_shell_commands_from_config(
 
     command_dispatch_table = {}
 
+
+
     for shell_command in shell_commands:
         name = shell_command.get('name')
         command = shell_command.get('command')
@@ -83,8 +85,24 @@ async def _run_subprocess(
     stdout, and stderr.
     """
     cmd_str = cmd
+    def get_all_dict_val(t_dict: dict):
+        if isinstance(t_dict, dict):
+            for key, val in t_dict.items():
+                if isinstance(val, dict):
+                    for tup in get_all_dict_val(val):
+                        yield tup
+                else:
+                    yield '-'+key
+                    yield '"'+str(val)+'"'
+
     if allow_params:
-        cmd_str = cmd.format(*params.get('shell_params', []))
+        shell_json = params.get('shell_params', {})
+        logging.info(type(shell_json))
+        cmd_list = [str(ele) for ele in shell_json.keys()]
+        if shell_json:
+            cmd_list.extend(get_all_dict_val(shell_json))
+        cmd_shell_str = ' '.join(cmd_list)
+        cmd_str = cmd.format(cmd_shell_str)
 
     logging.info("Running command: %s", cmd_str)
 

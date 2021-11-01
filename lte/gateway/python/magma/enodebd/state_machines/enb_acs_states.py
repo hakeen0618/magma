@@ -13,6 +13,7 @@ limitations under the License.
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from typing import Any, Optional
+import os,hashlib
 
 from magma.enodebd.data_models.data_model import InvalidTrParamPath
 from magma.enodebd.data_models.data_model_parameters import ParameterName
@@ -1048,6 +1049,72 @@ class EndSessionState(EnodebAcsState):
         return 'Completed provisioning eNB. Awaiting new Inform.'
 
 
+class EnbSendDownloadState(EnodebAcsState):
+    UPGRADE_FILE_TYPE = '1 Firmware Upgrade Image'
+    def __init__(self, acs: EnodebAcsStateMachine, when_done: str):
+        super().__init__()
+        self.acs = acs
+        self.done_transition = when_done
+        self.prev_msg_was_inform = False
+
+    def read_msg(self, message: Any) -> AcsReadMsgResult:
+        """
+        This state can be transitioned into through user command.
+        All messages received by enodebd will be ignored in this state.
+        """
+        if self.prev_msg_was_inform \
+                and not isinstance(message, models.DummyInput):
+            return AcsReadMsgResult(False, None)
+        elif isinstance(message, models.Inform):
+            self.prev_msg_was_inform = True
+            process_inform_message(
+                message, self.acs.data_model,
+                self.acs.device_cfg,
+            )
+            return AcsReadMsgResult(True, None)
+        self.prev_msg_was_inform = False
+        return AcsReadMsgResult(True, None)
+
+    def get_msg(self, message: Any) -> AcsMsgAndTransition:
+        # def get_file_md5(filename):
+        #     if not os.path.isfile(filename):
+        #         raise Exception("file %s is not exist" %filename)
+        #     hashcode = hashlib.md5()
+        #     with open(filename, 'rb') as f:
+        #         while True:
+        #             b = f.read(8096)
+        #             if not b:
+        #                 break
+        #             hashcode.update(b)
+        #     return hashcode.hexdigest()
+        # def get_file_size(filename):
+        #     if not os.path.isfile(filename):
+        #         raise Exception("file %s is not exist" %filename)
+        #     return os.path.getsize(filename)
+        if self.prev_msg_was_inform:
+            response = models.InformResponse()
+            # Set maxEnvelopes to 1, as per TR-069 spec
+            response.MaxEnvelopes = 1
+            return AcsMsgAndTransition(response, None)
+        logger.info('Sending download request to eNB')
+        request = models.Download()
+        request.CommandKey = ''
+        request.FileType = self.UPGRADE_FILE_TYPE
+        request.URL = self.acs.desired_cfg.get_parameter(ParameterName.DOWNLOAD_URL)
+        request.Username = self.acs.desired_cfg.get_parameter(ParameterName.DOWNLOAD_USER)
+        request.Password = self.acs.desired_cfg.get_parameter(ParameterName.DOWNLOAD_PASSWORD)
+        request.FileSize = self.acs.desired_cfg.get_parameter(ParameterName.DOWNLOAD_FILESIZE)
+        request.TargetFileName = self.acs.desired_cfg.get_parameter(ParameterName.DOWNLOAD_FILENAME)
+        request.Md5 = self.acs.desired_cfg.get_parameter(ParameterName.DOWNLOAD_MD5)
+        request.DelaySeconds = 0
+        request.SuccessURL = ''
+        request.FailureURL = ''
+        return AcsMsgAndTransition(request, self.done_transition)
+
+    def state_description(self) -> str:
+        return 'download file to eNB'
+
+
 class EnbSendRebootState(EnodebAcsState):
     def __init__(self, acs: EnodebAcsStateMachine, when_done: str):
         super().__init__()
@@ -1148,6 +1215,73 @@ class WaitRebootResponseState(EnodebAcsState):
         return 'Rebooting eNB'
 
 
+class WaitInformMDownloadState(EnodebAcsState):
+    """
+    After sending a download request, we expect an Inform request with a
+    specific 'inform event code'
+    """
+
+    # Time to wait for eNodeB reboot. The measured time
+    # (on BaiCells indoor eNodeB)
+    # is ~300secs, so add healthy padding on top of this.
+    DOWNLOAD_TIMEOUT = 600  # In seconds
+    # We expect that the Inform we receive tells us the eNB has Download.
+    INFORM_EVENT_CODE = 'M DOWNLOAD'
+
+    def __init__(
+        self,
+        acs: EnodebAcsStateMachine,
+        when_done: str,
+        when_timeout: str,
+    ):
+        super().__init__()
+        self.acs = acs
+        self.done_transition = when_done
+        self.timeout_transition = when_timeout
+        self.timeout_timer = None
+        self.timer_handle = None
+
+    def enter(self):
+        self.timeout_timer = StateMachineTimer(self.DOWNLOAD_TIMEOUT)
+
+        def check_timer() -> None:
+            if self.timeout_timer.is_done():
+                self.acs.transition(self.timeout_transition)
+                raise Tr069Error(
+                    'Did not receive Inform response after '
+                    'Downloading',
+                )
+
+        self.timer_handle = \
+            self.acs.event_loop.call_later(
+                self.DOWNLOAD_TIMEOUT,
+                check_timer,
+            )
+
+    def exit(self):
+        self.timer_handle.cancel()
+        self.timeout_timer = None
+
+    def read_msg(self, message: Any) -> AcsReadMsgResult:
+        if not isinstance(message, models.Inform):
+            return AcsReadMsgResult(False, None)
+        if does_inform_have_event(message, '2 PERIODIC'):
+            return AcsReadMsgResult(True, None)
+        if not does_inform_have_event(message, self.INFORM_EVENT_CODE):
+            raise Tr069Error(
+                'Did not receive M Download event code in '
+                'Inform',
+            )
+        process_inform_message(
+            message, self.acs.data_model,
+            self.acs.device_cfg,
+        )
+        return AcsReadMsgResult(True, self.done_transition)
+
+    def state_description(self) -> str:
+        return 'Waiting for M DOWNLOAD code from Inform'
+
+
 class WaitInformMRebootState(EnodebAcsState):
     """
     After sending a reboot request, we expect an Inform request with a
@@ -1212,6 +1346,24 @@ class WaitInformMRebootState(EnodebAcsState):
     def state_description(self) -> str:
         return 'Waiting for M Reboot code from Inform'
 
+
+class WaitDownloadResponseState(EnodebAcsState):
+    def __init__(self, acs: EnodebAcsStateMachine, when_done: str):
+        super().__init__()
+        self.acs = acs
+        self.done_transition = when_done
+
+    def read_msg(self, message: Any) -> AcsReadMsgResult:
+        if not isinstance(message, models.DownloadResponse):
+            return AcsReadMsgResult(False, None)
+        return AcsReadMsgResult(True, None)
+
+    def get_msg(self, message: Any) -> AcsMsgAndTransition:
+        """ Reply with empty message """
+        return AcsMsgAndTransition(models.DummyInput(), self.done_transition)
+
+    def state_description(self) -> str:
+        return 'download the file to eNB'
 
 class WaitRebootDelayState(EnodebAcsState):
     """
