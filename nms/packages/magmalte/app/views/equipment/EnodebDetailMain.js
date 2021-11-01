@@ -34,6 +34,7 @@ import moment from 'moment';
 import nullthrows from '@fbcnms/util/nullthrows';
 import withAlert from '@fbcnms/ui/components/Alert/withAlert';
 
+import EnodebUpgradeButton from './UpgradeEnodebDialog';
 import {DateTimePicker} from '@material-ui/pickers';
 import {EnodebJsonConfig} from './EnodebDetailConfig';
 import {EnodebStatus, EnodebSummary} from './EnodebDetailSummaryStatus';
@@ -44,7 +45,6 @@ import {makeStyles} from '@material-ui/styles';
 import {useContext, useState} from 'react';
 import {useEnqueueSnackbar} from '@fbcnms/ui/hooks/useSnackbar';
 import {useRouter} from '@fbcnms/ui/hooks';
-
 const useStyles = makeStyles(theme => ({
   dashboardRoot: {
     margin: theme.spacing(5),
@@ -81,7 +81,20 @@ export function EnodebDetail() {
             label: 'Overview',
             to: '/overview',
             icon: DashboardIcon,
-            filters: <EnodebRebootButton />,
+            filters: (
+              <Grid
+                container
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}>
+                <Grid item>
+                  <EnodebUpgradeButton />
+                </Grid>
+                <Grid item>
+                  <EnodebRebootButton />
+                </Grid>
+              </Grid>
+            ),
           },
           {
             label: 'Config',

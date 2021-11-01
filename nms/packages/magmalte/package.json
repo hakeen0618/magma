@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+
     "build": "rimraf static/dist && NODE_ENV=production node -r '@fbcnms/babel-register' ../../node_modules/webpack/bin/webpack --config ./config/webpack.production.config.js",
     "cmd": "node -r '@fbcnms/babel-register'",
     "start": "yarn run start:dev",
@@ -14,6 +15,8 @@
     "mockserver": "node -r '@fbcnms/babel-register' scripts/mockServer.js"
   },
   "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "antd": "^4.16.13",
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.14.0",
     "@babel/node": "^7.0.0",
@@ -61,6 +64,8 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "axios": "^0.23.0",
+    "antd": "^4.16.13",
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-transform-react-jsx": "^7.0.0",
     "@babel/preset-env": "^7.11.5",
