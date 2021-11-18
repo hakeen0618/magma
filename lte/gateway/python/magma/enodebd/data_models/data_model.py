@@ -260,6 +260,24 @@ class DataModel(ABC):
 
     @classmethod
     @abstractmethod
+    def get_num_neighbor_freq(cls) -> int:
+        """
+        Returns:
+            The number of Neighbor Freq in the configuration.
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
+    def get_num_neighbor_cell(cls) -> int:
+        """
+        Retruns:
+            The number of Neighbor Cell int the configuration.
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
     def get_numbered_param_names(
         cls,
     ) -> Dict[ParameterName, List[ParameterName]]:

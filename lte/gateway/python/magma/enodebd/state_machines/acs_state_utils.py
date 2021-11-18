@@ -205,6 +205,30 @@ def get_object_params_to_get(
             current = desired_cfg.get_parameter_names_for_object(obj_name)
         names_to_add = list(set(desired) - set(current))
         names = names + names_to_add
+    num_neighbor_freq = int(device_cfg.get_parameter(ParameterName.NUM_LTE_NEIGHBOR_FREQ))
+    for i in range(1, num_neighbor_freq + 1):
+        obj_name = ParameterName.NEGIH_FREQ_LIST % i
+        if not device_cfg.has_object(obj_name):
+            device_cfg.add_object(obj_name)
+        obj_to_params = data_model.get_numbered_param_names()
+        desired = obj_to_params[obj_name]
+        current = []
+        if desired_cfg is not None:
+            current = desired_cfg.get_parameter_names_for_object(obj_name)
+        names_to_add = list(set(desired) - set(current))
+        names = names + names_to_add
+    num_neighbor_cell = int(device_cfg.get_parameter(ParameterName.NUM_LTE_NEIGHBOR_CELL))
+    for i in range(1, num_neighbor_cell + 1):
+        obj_name = ParameterName.NEIGHBOR_CELL_LIST_N % i
+        if not device_cfg.has_object(obj_name):
+            device_cfg.add_object(obj_name)
+        obj_to_params = data_model.get_numbered_param_names()
+        desired = obj_to_params[obj_name]
+        current = []
+        if desired_cfg is not None:
+            current = desired_cfg.get_parameter_names_for_object(obj_name)
+        names_to_add = list(set(desired) - set(current))
+        names = names + names_to_add
     return names
 
 
