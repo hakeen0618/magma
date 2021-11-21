@@ -395,6 +395,15 @@ class BaicellsQAFBTrDataModel(DataModel):
         ParameterName.SW_VERSION: TrParam(DEVICE_PATH + 'DeviceInfo.SoftwareVersion', True, TrParameterType.STRING, False),
         ParameterName.SERIAL_NUMBER: TrParam(DEVICE_PATH + 'DeviceInfo.SerialNumber', True, TrParameterType.STRING, False),
 
+        ParameterName.NUM_LTE_NEIGHBOR_FREQ: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.CarrierNumberOfEntries', True,
+            TrParameterType.INT, False,
+        ),
+        ParameterName.NUM_LTE_NEIGHBOR_CELL: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECellNumberOfEntries', True, TrParameterType.INT,
+            False,
+        ),
+
         # Capabilities
         ParameterName.DUPLEX_MODE_CAPABILITY: TrParam(EEPROM_PATH + 'div_multiple', True, TrParameterType.STRING, False),
         ParameterName.BAND_CAPABILITY: TrParam(EEPROM_PATH + 'work_mode', True, TrParameterType.STRING, False),
@@ -429,6 +438,9 @@ class BaicellsQAFBTrDataModel(DataModel):
         ParameterName.PERF_MGMT_UPLOAD_INTERVAL: TrParam(DEVICE_PATH + 'FAP.PerfMgmt.Config.PeriodicUploadInterval', False, TrParameterType.INT, False),
         ParameterName.PERF_MGMT_UPLOAD_URL: TrParam(DEVICE_PATH + 'FAP.PerfMgmt.Config.URL', False, TrParameterType.STRING, False),
     }
+
+    NUM_NEIGHBOR_CELL_CONFIG = 16
+    NUM_NEIGHBOR_FREQ_CONFIG = 8
 
     NUM_PLMNS_IN_CONFIG = 6
     TRANSFORMS_FOR_ENB = {
@@ -473,6 +485,14 @@ class BaicellsQAFBTrDataModel(DataModel):
     @classmethod
     def get_num_plmns(cls) -> int:
         return cls.NUM_PLMNS_IN_CONFIG
+
+    @classmethod
+    def get_num_neighbor_freq(cls) -> int:
+        return cls.NUM_NEIGHBOR_FREQ_CONFIG
+
+    @classmethod
+    def get_num_neighbor_cell(cls) -> int:
+        return cls.NUM_NEIGHBOR_CELL_CONFIG
 
     @classmethod
     def get_parameter_names(cls) -> List[ParameterName]:

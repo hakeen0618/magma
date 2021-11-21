@@ -199,6 +199,14 @@ class BaicellsTrDataModel(DataModel):
         ),
         ParameterName.PLMN: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.', True, TrParameterType.STRING, False),
         # PLMN arrays are added below
+        ParameterName.NUM_LTE_NEIGHBOR_FREQ: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.CarrierNumberOfEntries', True,
+            TrParameterType.INT, False,
+        ),
+        ParameterName.NUM_LTE_NEIGHBOR_CELL: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECellNumberOfEntries', True, TrParameterType.INT,
+            False,
+        ),
         ParameterName.TAC: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.TAC', True, TrParameterType.INT, False),
         ParameterName.IP_SEC_ENABLE: TrParam(
             DEVICE_PATH + 'Services.FAPService.Ipsec.IPSEC_ENABLE', False, TrParameterType.BOOLEAN, False,
@@ -226,6 +234,9 @@ class BaicellsTrDataModel(DataModel):
         ),
 
     }
+
+    NUM_NEIGHBOR_CELL_CONFIG = 16
+    NUM_NEIGHBOR_FREQ_CONFIG = 8
 
     NUM_PLMNS_IN_CONFIG = 6
     for i in range(1, NUM_PLMNS_IN_CONFIG + 1):
@@ -279,6 +290,14 @@ class BaicellsTrDataModel(DataModel):
     @classmethod
     def get_num_plmns(cls) -> int:
         return cls.NUM_PLMNS_IN_CONFIG
+
+    @classmethod
+    def get_num_neighbor_freq(cls) -> int:
+        return cls.NUM_NEIGHBOR_FREQ_CONFIG
+
+    @classmethod
+    def get_num_neighbor_cell(cls) -> int:
+        return cls.NUM_NEIGHBOR_CELL_CONFIG
 
     @classmethod
     def get_parameter_names(cls) -> List[ParameterName]:

@@ -10,6 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import re
 from abc import ABC, abstractmethod
 from collections import namedtuple
 from typing import Any, Optional
@@ -663,6 +664,7 @@ class WaitGetObjectParametersState(EnodebAcsState):
                 ParameterName.NUM_PLMNS,
                 num_plmns,
             )
+        # Number of Neighbor Freq objects reported can be incorrect. Let's count them
         num_neighbor = 0
         while True:
             obj_name = ParameterName.NEGIH_FREQ_LIST % (num_neighbor + 1)
@@ -699,6 +701,7 @@ class WaitGetObjectParametersState(EnodebAcsState):
                 ParameterName.NUM_LTE_NEIGHBOR_FREQ,
                 num_neighbor,
             )
+        # Number of Neighbor Cell objects reported can be incorrect. Let's count them
         num_neighbor_cell = 0
         while True:
             obj_name = ParameterName.NEIGHBOR_CELL_LIST_N % (num_neighbor_cell + 1)
@@ -710,8 +713,6 @@ class WaitGetObjectParametersState(EnodebAcsState):
                 break
             param_name_list = obj_to_params[obj_name]
             obj_path = self.acs.data_model.get_parameter(param_name_list[0]).path
-            logger.debug('object path ========================' + str(param_name_list))
-            logger.debug('object path_to_val ========================' + str(path_to_val))
             if obj_path not in path_to_val:
                 break
             if not self.acs.device_cfg.has_object(obj_name):
@@ -885,8 +886,7 @@ class AddObjectsState(EnodebAcsState):
         else:
             return AcsReadMsgResult(False, None)
         instance_n = message.InstanceNumber
-        logger.debug('adding the instance params========> %s', instance_n)
-        logger.debug('adding the object params========> %s', self.added_param)
+        self.added_param = re.sub(r'\d', str(instance_n), self.added_param)
         self.acs.device_cfg.add_object(self.added_param)
         obj_list_to_add = get_all_objects_to_add(
             self.acs.desired_cfg,

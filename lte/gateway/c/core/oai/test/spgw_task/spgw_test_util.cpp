@@ -115,7 +115,7 @@ void fill_create_session_request(
   session_request_p->sender_fteid_for_cp.teid           = (teid_t) 1;
   session_request_p->sender_fteid_for_cp.interface_type = S11_MME_GTP_C;
   session_request_p->sender_fteid_for_cp.ipv4_address.s_addr =
-      0xc0a83c8e;  // 192.168.8.120
+      0xc0a83c8e;  // 192.168.60.142
   session_request_p->sender_fteid_for_cp.ipv4 = 1;
 
   const char default_apn[] = "magma.ipv4";

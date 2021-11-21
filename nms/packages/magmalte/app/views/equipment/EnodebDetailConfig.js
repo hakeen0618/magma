@@ -49,27 +49,29 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
 import Select from '@material-ui/core/Select';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
-import {AltFormField} from '../../components/FormField';
 
 function reducer(state, action) {
   const index = state.indexOf(action.item);
 
   switch (action.type) {
     case 'add':
-      return [...state, action.item];
+      const arr = [...state, action.item];
+      if (action.fn) action.fn(arr);
+      return arr;
     case 'modify':
       Object.assign(state[index], action.new);
-      //state.splice(index, 1, action.item);
+      if (action.fn) action.fn(state);
       return [...state];
     case 'remove':
-      return [...state.slice(0, index), ...state.slice(index + 1)];
+      const arrD = [...state.slice(0, index), ...state.slice(index + 1)];
+      if (action.fn) action.fn(arrD);
+      return arrD;
     default:
       throw new Error();
   }
@@ -88,17 +90,60 @@ function cellReducer(state, action) {
       if (action.fn) action.fn(state);
       return [...state];
     case 'remove':
-        const arrD = [...state.slice(0, index), ...state.slice(index + 1)];
-        if (action.fn) action.fn(arrD);
+      const arrD = [...state.slice(0, index), ...state.slice(index + 1)];
+      if (action.fn) action.fn(arrD);
       return arrD;
     default:
       throw new Error();
   }
 }
 
-export function FreqFormDialog(props) {
+function FreqFormDialog(props) {
   const type = props.type || 'add',
-    row = props.row || {enable: true};
+    row = {
+      enable: true,
+      index: '',
+      earfcn: '',
+      q_offset_range: '',
+      q_rx_lev_min_sib5: '',
+      p_max: '',
+      t_reselection_eutra: '',
+      t_reselection_eutra_sf_medium: '',
+      resel_thresh_high: '',
+      resel_thresh_low: '',
+      reselection_priority: '',
+    },
+    classes = useStyles();
+
+  if (props.list) {
+    const idxes = props.list.map(function (m) {
+        return m.index - 0;
+      }),
+      maxList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+
+    maxList.map(function (idx) {
+      if (!idxes.includes(idx) && [''].includes(row.index)) {
+        row.index = idx;
+      }
+    });
+  }
+  if (props.row) {
+    [
+      'enable',
+      'index',
+      'earfcn',
+      'q_offset_range',
+      'q_rx_lev_min_sib5',
+      'p_max',
+      't_reselection_eutra',
+      't_reselection_eutra_sf_medium',
+      'resel_thresh_high',
+      'resel_thresh_low',
+      'reselection_priority',
+    ].map(function (key) {
+      row[key] = props.row[key];
+    });
+  }
 
   const [form, setForm] = React.useState(row);
 
@@ -137,10 +182,10 @@ export function FreqFormDialog(props) {
             }}>
             <TextField
               variant="standard"
-              label="Index"
-              name="index"
-              value={form.index}
-              onChange={({target}) => handleChange('index', target.value)}
+              label="EARFCN"
+              name="earfcn"
+              value={form.earfcn}
+              onChange={({target}) => handleChange('earfcn', target.value)}
             />
             <FormControlLabel
               sx={{paddingTop: 3, paddingLeft: 1}}
@@ -148,86 +193,98 @@ export function FreqFormDialog(props) {
                 <Switch
                   checked={form.enable}
                   name="enable"
+                  // eslint-disable-next-line
                   onChange={({target}) => handleChange('enable', !form.enable)}
                 />
               }
               label="Enable"
             />
+            <FormControl className={classes.formControl}>
+              <InputLabel id="qOffsetRange-select-label">
+                Q-OffsetRange
+              </InputLabel>
+              <Select
+                width="200"
+                labelId="qOffsetRange-select-label"
+                variant="standard"
+                name="q_offset_range"
+                value={form.q_offset_range}
+                onChange={({target}) =>
+                  handleChange('q_offset_range', target.value)
+                }>
+                <MenuItem value={-22}>-22</MenuItem>
+                <MenuItem value={-24}>-24</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               variant="standard"
-              label="EARFCN"
-              name="earfcn"
-              value={form.earfcn}
-              onChange={({target}) => handleChange('earfcn', target.value)}
-            />
-            <TextField
-              variant="standard"
-              label="Q-OffsetRange"
-              name="qOffsetRange"
-              value={form.qOffsetRange}
+              label="q_rx_lev_min_sib5"
+              name="q_rx_lev_min_sib5"
+              value={form.q_rx_lev_min_sib5}
               onChange={({target}) =>
-                handleChange('qOffsetRange', target.value)
+                handleChange('q_rx_lev_min_sib5', target.value)
               }
             />
             <TextField
               variant="standard"
-              label="qRxLevMinSib5"
-              name="qRxLevMinSib5"
-              value={form.qRxLevMinSib5}
+              label="p_max"
+              name="p_max"
+              value={form.p_max}
+              onChange={({target}) => handleChange('p_max', target.value)}
+            />
+            <TextField
+              variant="standard"
+              label="t_reselection_eutra"
+              name="t_reselection_eutra"
+              value={form.t_reselection_eutra}
               onChange={({target}) =>
-                handleChange('qRxLevMinSib5', target.value)
+                handleChange('t_reselection_eutra', target.value)
+              }
+            />
+            <FormControl className={classes.formControl}>
+              <InputLabel id="medium-select-label">
+                t_reselection_eutra_sf_medium
+              </InputLabel>
+              <Select
+                width="200"
+                labelId="medium-select-label"
+                variant="standard"
+                name="t_reselection_eutra_sf_medium"
+                value={form.t_reselection_eutra_sf_medium}
+                onChange={({target}) =>
+                  handleChange('t_reselection_eutra_sf_medium', target.value)
+                }>
+                <MenuItem value={25}>25</MenuItem>
+                <MenuItem value={50}>50</MenuItem>
+                <MenuItem value={75}>75</MenuItem>
+                <MenuItem value={100}>100</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              variant="standard"
+              label="resel_thresh_high"
+              name="resel_thresh_high"
+              value={form.resel_thresh_high}
+              onChange={({target}) =>
+                handleChange('resel_thresh_high', target.value)
               }
             />
             <TextField
               variant="standard"
-              label="PMax"
-              name="pmax"
-              value={form.pmax}
-              onChange={({target}) => handleChange('pmax', target.value)}
-            />
-            <TextField
-              variant="standard"
-              label="rReselectionEutra"
-              name="rReselectionEutra"
-              value={form.rReselectionEutra}
+              label="resel_thresh_low"
+              name="resel_thresh_low"
+              value={form.resel_thresh_low}
               onChange={({target}) =>
-                handleChange('rReselectionEutra', target.value)
+                handleChange('resel_thresh_low', target.value)
               }
             />
             <TextField
               variant="standard"
-              label="rReselectionEutraSFMedium"
-              name="rReselectionEutraSFMedium"
-              value={form.rReselectionEutraSFMedium}
+              label="reselection_priority"
+              name="reselection_priority"
+              value={form.reselection_priority}
               onChange={({target}) =>
-                handleChange('rReselectionEutraSFMedium', target.value)
-              }
-            />
-            <TextField
-              variant="standard"
-              label="ReselThreshHigh"
-              name="reselThreshHigh"
-              value={form.reselThreshHigh}
-              onChange={({target}) =>
-                handleChange('reselThreshHigh', target.value)
-              }
-            />
-            <TextField
-              variant="standard"
-              label="ReselThreshLow"
-              name="reselThreshLow"
-              value={form.reselThreshLow}
-              onChange={({target}) =>
-                handleChange('reselThreshLow', target.value)
-              }
-            />
-            <TextField
-              variant="standard"
-              label="ReselectionPriority"
-              name="reselectionPriority"
-              value={form.reselectionPriority}
-              onChange={({target}) =>
-                handleChange('reselectionPriority', target.value)
+                handleChange('reselection_priority', target.value)
               }
             />
           </Box>
@@ -259,7 +316,21 @@ function CellFormDialog(props) {
       qOffset: '',
       cio: '',
       tac: '',
-    };
+    },
+    classes = useStyles();
+
+  if (props.list) {
+    const idxes = props.list.map(function (m) {
+        return m.index - 0;
+      }),
+      maxList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+
+    maxList.map(function (idx) {
+      if (!idxes.includes(idx) && [''].includes(row.index)) {
+        row.index = idx;
+      }
+    });
+  }
 
   if (props.row) {
     [
@@ -313,11 +384,11 @@ function CellFormDialog(props) {
               '& .MuiTextField-root': {m: 1, width: '25ch'},
             }}>
             <TextField
-              label="Index"
+              label="PLMN"
               variant="standard"
-              name="index"
-              value={cellForm.index}
-              onChange={({target}) => handleChange('index', target.value)}
+              name="plmn"
+              value={cellForm.plmn}
+              onChange={({target}) => handleChange('plmn', target.value)}
             />
             <FormControlLabel
               sx={{paddingTop: 3, paddingLeft: 1}}
@@ -329,13 +400,6 @@ function CellFormDialog(props) {
                 />
               }
               label="Enable"
-            />
-            <TextField
-              label="PLMN"
-              variant="standard"
-              name="plmn"
-              value={cellForm.plmn}
-              onChange={({target}) => handleChange('plmn', target.value)}
             />
             <TextField
               label="Cell ID"
@@ -358,31 +422,31 @@ function CellFormDialog(props) {
               value={cellForm.pci}
               onChange={({target}) => handleChange('pci', target.value)}
             />
-            <FormControl>
+            <FormControl className={classes.formControl}>
               <InputLabel id="qOffset-select-label">qOffset</InputLabel>
               <Select
-                  width="200"
-                  labelId="qOffset-select-label"
-                  variant="standard"
-                  name="cio"
-                  value={cellForm.qOffset}
-                  onChange={({target}) => handleChange('qOffset', target.value)}>
-                      <MenuItem value={-20}>-20</MenuItem>
-                      <MenuItem value={-22}>-22</MenuItem>
-                      <MenuItem value={-24}>-24</MenuItem>
-                </Select>
+                width="200"
+                labelId="qOffset-select-label"
+                variant="standard"
+                name="cio"
+                value={cellForm.qOffset}
+                onChange={({target}) => handleChange('qOffset', target.value)}>
+                <MenuItem value={-20}>-20</MenuItem>
+                <MenuItem value={-22}>-22</MenuItem>
+                <MenuItem value={-24}>-24</MenuItem>
+              </Select>
             </FormControl>
-            <FormControl>
+            <FormControl className={classes.formControl}>
               <InputLabel id="cio-select-label">CIO</InputLabel>
               <Select
-                  labelId="cio-select-label"
-                  variant="standard"
-                  name="cio"
-                  value={cellForm.cio}
-                  onChange={({target}) => handleChange('cio', target.value)}>
-                      <MenuItem value={-22}>-22</MenuItem>
-                      <MenuItem value={-24}>-24</MenuItem>
-                </Select>
+                labelId="cio-select-label"
+                variant="standard"
+                name="cio"
+                value={cellForm.cio}
+                onChange={({target}) => handleChange('cio', target.value)}>
+                <MenuItem value={-22}>-22</MenuItem>
+                <MenuItem value={-24}>-24</MenuItem>
+              </Select>
             </FormControl>
             <TextField
               label="TAC"
@@ -408,147 +472,201 @@ function CellFormDialog(props) {
   );
 }
 
-// export function NeighFreq() {
-//   const ctx = useContext(EnodebContext);
-//   const {match} = useRouter();
-//   const enodebSerial: string = nullthrows(match.params.enodebSerial);
-//   const enbInfo = ctx.state.enbInfo[enodebSerial];
-//   const [dataList, dispatch] = useReducer(reducer, []);
-//
-//   const addFreq = row => {
-//     if (row === '') {
-//       return;
-//     }
-//     dispatch({type: 'add', item: row});
-//   };
-//
-//   const modify = (row, newRow) => {
-//     dispatch({type: 'modify', item: row, new: newRow});
-//   };
-//
-//   const remove = row => {
-//     dispatch({type: 'remove', item: row});
-//   };
-//
-//   const columns = [
-//     {
-//       field: 'index',
-//       title: 'Index',
-//       width: 120,
-//     },
-//     {
-//       field: 'enable',
-//       title: 'Enable',
-//       width: 150,
-//     },
-//     {
-//       field: 'earfcn',
-//       title: 'EARFCN',
-//       width: 150,
-//     },
-//     {
-//       field: 'qOffsetRange',
-//       title: 'Q-OffsetRange',
-//       width: 150,
-//     },
-//     {
-//       field: 'qRxLevMinSib5',
-//       title: 'qRxLevMinSib5',
-//       width: 150,
-//     },
-//     {
-//       field: 'pmax',
-//       title: 'PMax',
-//       width: 150,
-//     },
-//     {
-//       field: 'rReselectionEutra',
-//       title: 'tReselectionEutra',
-//       width: 150,
-//     },
-//     {
-//       field: 'rReselectionEutraSFMedium',
-//       title: 'tReselectionEutraMedium',
-//       width: 150,
-//     },
-//     {
-//       field: 'reselThreshHigh',
-//       title: 'ReselThreshHign',
-//       width: 150,
-//     },
-//     {
-//       field: 'reselThreshLow',
-//       title: 'ReselThreshLow',
-//       width: 150,
-//     },
-//     {
-//       field: 'reselectionPriority',
-//       title: 'ReselectionPriority',
-//       width: 150,
-//     },
-//     {
-//       field: 'op',
-//       title: 'Operations',
-//       width: 150,
-//       render: function (o) {
-//         return (
-//           <>
-//             <IconButton aria-label="edit" size="small">
-//               <FreqFormDialog
-//                 type="edit"
-//                 row={o.row}
-//                 onSave={async freq => {
-//                   try {
-//                     modify(o.row, freq);
-//
-//                     enbInfo.enb.freqList = dataList || [];
-//                     await ctx.setState(enbInfo.enb.serial, {
-//                       ...enbInfo,
-//                       enb: enb,
-//                     });
-//                     enqueueSnackbar('eNodeb saved successfully', {
-//                       variant: 'success',
-//                     });
-//                   } catch (e) {}
-//                 }}
-//               />
-//             </IconButton>
-//             <IconButton aria-label="delete" size="small">
-//               <DeleteIcon onClick={() => remove(o.row)} fontSize="inherit" />
-//             </IconButton>
-//           </>
-//         );
-//       },
-//     },
-//   ];
-//
-//   return (
-//     <div>
-//       <div>
-//         Neigh Freq List
-//         <IconButton aria-label="add" size="small">
-//           <FreqFormDialog
-//             onSave={async freq => {
-//               try {
-//                 addFreq(freq);
-//
-//                 enbInfo.enb.freqList = dataList || [];
-//                 await ctx.setState(enbInfo.enb.serial, {...enbInfo, enb: enb});
-//                 enqueueSnackbar('eNodeb saved successfully', {
-//                   variant: 'success',
-//                 });
-//               } catch (e) {}
-//             }}
-//           />
-//         </IconButton>
-//       </div>
-//
-//       <div style={{width: '100%'}}>
-//         <ActionTable rows={dataList} columns={columns} />
-//       </div>
-//     </div>
-//   );
-// }
+export function NeighFreq() {
+  const ctx = useContext(EnodebContext);
+  const {match} = useRouter();
+  const enodebSerial: string = nullthrows(match.params.enodebSerial);
+  const enbInfo = ctx.state.enbInfo[enodebSerial];
+  const [dataList, dispatch] = useReducer(
+    reducer,
+    enbInfo.enb?.enodeb_config?.managed_config?.NeighborFreqList ?? [],
+  );
+  const enqueueSnackbar = useEnqueueSnackbar();
+
+  const addFreq = (row, cb) => {
+    if (row === '') {
+      return;
+    }
+    dispatch({type: 'add', item: row, fn: cb});
+  };
+  // modify will use  in future.
+  // const modify = (row, newRow, cb) => {
+  //   dispatch({type: 'modify', item: row, new: newRow, fn: cb});
+  // };
+
+  const remove = (row, cb) => {
+    dispatch({type: 'remove', item: row, fn: cb});
+  };
+
+  const columns = [
+    {
+      field: 'index',
+      title: 'Index',
+      width: 120,
+      render: function (o) {
+        return o.index - 1;
+      },
+    },
+    {
+      field: 'enable',
+      title: 'Enable',
+      width: 150,
+    },
+    {
+      field: 'earfcn',
+      title: 'EARFCN',
+      width: 150,
+    },
+    {
+      field: 'q_offset_range',
+      title: 'Q-OffsetRange',
+      width: 150,
+    },
+    {
+      field: 'q_rx_lev_min_sib5',
+      title: 'q_rx_lev_min_sib5',
+      width: 150,
+    },
+    {
+      field: 'p_max',
+      title: 'p_max',
+      width: 150,
+    },
+    {
+      field: 't_reselection_eutra',
+      title: 'tReselectionEutra',
+      width: 150,
+    },
+    {
+      field: 't_reselection_eutra_sf_medium',
+      title: 'tReselectionEutraMedium',
+      width: 150,
+    },
+    {
+      field: 'resel_thresh_high',
+      title: 'ReselThreshHign',
+      width: 150,
+    },
+    {
+      field: 'resel_thresh_low',
+      title: 'resel_thresh_low',
+      width: 150,
+    },
+    {
+      field: 'reselection_priority',
+      title: 'reselection_priority',
+      width: 150,
+    },
+    {
+      field: 'op',
+      title: 'Operations',
+      width: 150,
+      render: function (o) {
+        return (
+          <>
+            <IconButton aria-label="delete" size="small">
+              <DeleteIcon
+                onClick={() => {
+                  try {
+                    remove(o, function (p) {
+                      const list = JSON.parse(JSON.stringify(p));
+                      try {
+                        list.map(function (item) {
+                          [
+                            'index',
+                            'earfcn',
+                            'q_offset_range',
+                            'q_rx_lev_min_sib5',
+                            'p_max',
+                            't_reselection_eutra',
+                            't_reselection_eutra_sf_medium',
+                            'resel_thresh_high',
+                            'resel_thresh_low',
+                            'reselection_priority',
+                          ].map(function (key) {
+                            item[key] = parseInt(item[key]);
+                          });
+
+                          delete item.tableData;
+                        });
+                      } catch (e) {}
+                      enbInfo.enb.enodeb_config.managed_config.NeighborFreqList = list;
+                      enbInfo.enb.config.NeighborFreqList = list;
+                      ctx.setState(enbInfo.enb.serial, {
+                        ...enbInfo,
+                        enb: enbInfo.enb,
+                      });
+                      enqueueSnackbar('eNodeb deleted successfully', {
+                        variant: 'success',
+                      });
+                    });
+                  } catch (e) {}
+                }}
+                fontSize="inherit"
+              />
+            </IconButton>
+          </>
+        );
+      },
+    },
+  ];
+
+  return (
+    <div>
+      <div>
+        Neigh Freq List
+        <IconButton aria-label="add" size="small">
+          <FreqFormDialog
+            list={enbInfo.enb.config.NeighborFreqList}
+            onSave={freq => {
+              try {
+                addFreq(freq, function (p) {
+                  const list = JSON.parse(JSON.stringify(p));
+                  try {
+                    list.map(function (item) {
+                      [
+                        'index',
+                        'earfcn',
+                        'q_offset_range',
+                        'q_rx_lev_min_sib5',
+                        'p_max',
+                        't_reselection_eutra',
+                        't_reselection_eutra_sf_medium',
+                        'resel_thresh_high',
+                        'resel_thresh_low',
+                        'reselection_priority',
+                      ].map(function (key) {
+                        if (![''].includes(item[key])) {
+                          item[key] = parseInt(item[key]);
+                        }
+                      });
+
+                      delete item.tableData;
+                    });
+                  } catch (e) {}
+
+                  enbInfo.enb.enodeb_config.managed_config.NeighborFreqList = list;
+                  enbInfo.enb.config.NeighborFreqList = list;
+                  ctx.setState(enbInfo.enb.serial, {
+                    ...enbInfo,
+                    enb: enbInfo.enb,
+                  });
+                  enqueueSnackbar('eNodeb saved successfully', {
+                    variant: 'success',
+                  });
+                });
+              } catch (e) {}
+            }}
+          />
+        </IconButton>
+      </div>
+
+      <div style={{width: '100%'}}>
+        <ActionTable data={dataList} columns={columns} />
+      </div>
+    </div>
+  );
+}
 
 export function NeighCell() {
   const ctx = useContext(EnodebContext);
@@ -567,10 +685,10 @@ export function NeighCell() {
     }
     dispatch({type: 'add', item: row, fn: cb});
   };
-
-  const modify = (row, newRow, cb) => {
-    dispatch({type: 'modify', item: row, new: newRow, fn: cb});
-  };
+  // modify will use in future.
+  // const modify = (row, newRow, cb) => {
+  //   dispatch({type: 'modify', item: row, new: newRow, fn: cb});
+  // };
 
   const remove = (row, cb) => {
     dispatch({type: 'remove', item: row, fn: cb});
@@ -581,6 +699,9 @@ export function NeighCell() {
       field: 'index',
       title: 'Index',
       width: 120,
+      render: function (o) {
+        return o.index - 1;
+      },
     },
     {
       field: 'enable',
@@ -629,13 +750,11 @@ export function NeighCell() {
       render: function (o) {
         return (
           <>
-            <IconButton aria-label="edit" size="small">
-              <CellFormDialog
-                type="edit"
-                row={o}
-                onSave={freq => {
+            <IconButton aria-label="delete" size="small">
+              <DeleteIcon
+                onClick={() => {
                   try {
-                    modify(o, freq, function (p) {
+                    remove(o, function (p) {
                       const list = JSON.parse(JSON.stringify(p));
                       try {
                         list.map(function (item) {
@@ -660,48 +779,14 @@ export function NeighCell() {
                         ...enbInfo,
                         enb: enbInfo.enb,
                       });
-                      enqueueSnackbar('eNodeb saved successfully', {
+                      enqueueSnackbar('eNodeb deleted successfully', {
                         variant: 'success',
                       });
                     });
                   } catch (e) {}
                 }}
+                fontSize="inherit"
               />
-            </IconButton>
-            <IconButton aria-label="delete" size="small">
-              <DeleteIcon onClick={() => {
-                  try{
-                      remove(o, function(p) {
-                          const list = JSON.parse(JSON.stringify(p));
-                          try {
-                            list.map(function (item) {
-                              [
-                                'index',
-                                'cellId',
-                                'earfcn',
-                                'pci',
-                                'qOffset',
-                                'cio',
-                                'tac',
-                              ].map(function (key) {
-                                item[key] = parseInt(item[key]);
-                              });
-
-                              delete item.tableData;
-                            });
-                          } catch (e) {}
-                          enbInfo.enb.enodeb_config.managed_config.NeighborCellList = list;
-                          enbInfo.enb.config.NeighborCellList = list;
-                          ctx.setState(enbInfo.enb.serial, {
-                            ...enbInfo,
-                            enb: enbInfo.enb,
-                          });
-                          enqueueSnackbar('eNodeb saved successfully', {
-                            variant: 'success',
-                          });
-                      });
-                  }catch (e){}
-              }} fontSize="inherit" />
             </IconButton>
           </>
         );
@@ -715,6 +800,7 @@ export function NeighCell() {
         Neigh Cell List
         <IconButton aria-label="add" size="small">
           <CellFormDialog
+            list={enbInfo.enb.config.NeighborCellList}
             onSave={cell => {
               try {
                 addCell(cell, function (p) {
@@ -739,7 +825,7 @@ export function NeighCell() {
                       delete item.tableData;
                     });
                   } catch (e) {}
-                  console.log(list);
+
                   enbInfo.enb.enodeb_config.managed_config.NeighborCellList = list;
                   enbInfo.enb.config.NeighborCellList = list;
                   ctx.setState(enbInfo.enb.serial, {
@@ -764,6 +850,10 @@ export function NeighCell() {
 }
 
 const useStyles = makeStyles(theme => ({
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 260,
+  },
   dashboardRoot: {
     margin: theme.spacing(3),
     flexGrow: 1,
@@ -887,7 +977,8 @@ export default function EnodebConfig() {
           ) : (
             <EnodebUnmanagedRanConfig enbInfo={enbInfo} />
           )}
-          {/*<NeighFreq />*/}
+
+          <NeighFreq />
 
           <NeighCell />
         </Grid>

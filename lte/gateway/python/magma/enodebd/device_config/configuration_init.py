@@ -314,15 +314,22 @@ def _set_neighbor_cell_list(
     neighbor_cell_list: Any,
 ) -> None:
     """
+    Set the LTE Neighbor cell Params as following parameters:
+     - plmn
+     - cell_id
+     - earfcn
+     - pci
+     - tac
+     - q_offset
+     - cio
     """
     if neighbor_cell_list and len(neighbor_cell_list) >= 1:
-        for key, neighbor_cell_x in neighbor_cell_list.items():
-            i = neighbor_cell_x.index
-            desired_object_name = ParameterName.NEIGHBOR_CELL_LIST_N % i
-            cfg.add_object(desired_object_name)
-            cfg.set_parameter_for_object(ParameterName.NEIGHBOR_CELL_ENABLE_N % i, neighbor_cell_x.enable,
-                                        desired_object_name)
+        for neighbor_cell_x in neighbor_cell_list.values():
             if neighbor_cell_x.enable:
+                i = neighbor_cell_x.index
+                desired_object_name = ParameterName.NEIGHBOR_CELL_LIST_N % i
+                cfg.add_object(desired_object_name)
+                cfg.set_parameter_for_object(ParameterName.NEIGHBOR_CELL_ENABLE_N % i, int(neighbor_cell_x.enable), desired_object_name)
                 if neighbor_cell_x.plmn:
                     cfg.set_parameter_for_object(ParameterName.NEIGHBOR_CELL_PLMN_N % i, neighbor_cell_x.plmn, desired_object_name)
                 if neighbor_cell_x.cell_id:
@@ -348,13 +355,24 @@ def _set_neighbor_freq_list(
     cfg: EnodebConfiguration,
     neighbor_freq_list: Any,
 ) -> None:
+    """
+    Set the LTE Neighbor Freq Params as following parameters:
+     - earfcn
+     - q_offset_range
+     - q_rx_lev_min_sib5
+     - p_max
+     - t_reselection_eutra
+     - resel_thresh_high
+     - resel_thresh_low
+     - reselection_priority
+    """
     if neighbor_freq_list and len(neighbor_freq_list) >= 1:
-        for key, neighbor_x in neighbor_freq_list.items():
-            i = neighbor_x.index
-            object_name = ParameterName.NEGIH_FREQ_LIST % i
-            cfg.add_object(object_name)
-            cfg.set_parameter_for_object(ParameterName.NEIGHBOR_FREQ_ENABLE_N % i, neighbor_x.enable, object_name)
+        for neighbor_x in neighbor_freq_list.values():
             if neighbor_x.enable:
+                i = neighbor_x.index
+                object_name = ParameterName.NEGIH_FREQ_LIST % i
+                cfg.add_object(object_name)
+                cfg.set_parameter_for_object(ParameterName.NEIGHBOR_FREQ_ENABLE_N % i, int(neighbor_x.enable), object_name)
                 if neighbor_x.earfcn:
                     cfg.set_parameter_for_object(ParameterName.NEIGHBOR_FREQ_EARFCN_N % i, neighbor_x.earfcn, object_name)
                 if neighbor_x.q_offset_range is not None and neighbor_x.q_offset_range != '':
@@ -365,8 +383,6 @@ def _set_neighbor_freq_list(
                     cfg.set_parameter_for_object(ParameterName.NEIGHBOR_FREQ_PMAX_N % i, neighbor_x.p_max, object_name)
                 if neighbor_x.t_reselection_eutra is not None:
                     cfg.set_parameter_for_object(ParameterName.NEIGHBOR_FREQ_TRESELECTIONEUTRA_N % i, neighbor_x.t_reselection_eutra, object_name)
-                # if neighbor_x.t_reselection_eutra_sf_medium is not None:
-                #     cfg.set_parameter_for_object(ParameterName.NEIGHBOR_FREQ_TRESELECTIONEUTRASFMEDIUM_N % i, neighbor_x.t_reselection_eutra_sf_medium, object_name)
                 if neighbor_x.resel_thresh_high is not None:
                     cfg.set_parameter_for_object(ParameterName.NEIGHBOR_FREQ_RESELTHRESHHIGH_N % i, neighbor_x.resel_thresh_high, object_name)
                 if neighbor_x.resel_thresh_low is not None:

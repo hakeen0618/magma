@@ -28,7 +28,6 @@ from magma.enodebd.devices.device_utils import EnodebDeviceName
 from magma.enodebd.state_machines.enb_acs_impl import BasicEnodebAcsStateMachine
 from magma.enodebd.state_machines.enb_acs_states import (
     AddObjectsState,
-    BaicellsRemWaitState,
     CheckOptionalParamsState,
     DeleteObjectsState,
     EnbSendRebootState,
@@ -39,7 +38,6 @@ from magma.enodebd.state_machines.enb_acs_states import (
     GetParametersState,
     SendGetTransientParametersState,
     SetParameterValuesState,
-    SetParameterValuesNotAdminState,
     WaitEmptyMessageState,
     WaitGetObjectParametersState,
     WaitGetParametersState,
@@ -255,86 +253,86 @@ class BaicellsRTSTrDataModel(DataModel):
     NUM_NEIGHBOR_CELL_CONFIG = 16
     for i in range(1, NUM_NEIGHBOR_CELL_CONFIG + 1):
         PARAMETERS[ParameterName.NEIGHBOR_CELL_LIST_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.' % i, True, TrParameterType.INT, False,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.' % i, False, TrParameterType.INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_CELL_ID_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.CID' % i, True, TrParameterType.UNSIGNED_INT,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.CID' % i, False, TrParameterType.UNSIGNED_INT,
             False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_PLMN_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.PLMNID' % i, True, TrParameterType.STRING,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.PLMNID' % i, False, TrParameterType.STRING,
             False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_EARFCN_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.EUTRACarrierARFCN' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.EUTRACarrierARFCN' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_PCI_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.PhyCellID' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.PhyCellID' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_TAC_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.X_BAICELLS_COM_TAC' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.X_BAICELLS_COM_TAC' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_QOFFSET_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.QOffset' % i, True, TrParameterType.INT,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.QOffset' % i, False, TrParameterType.INT,
             False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_CIO_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.CIO' % i, True, TrParameterType.INT, False,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.CIO' % i, False, TrParameterType.INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_CELL_ENABLE_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.Enable' % i, True, TrParameterType.BOOLEAN,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECell.%d.Enable' % i, False, TrParameterType.BOOLEAN,
             False,
         )
 
     NUM_NEIGHBOR_FREQ_CONFIG = 8
     for i in range(1, NUM_NEIGHBOR_FREQ_CONFIG + 1):
         PARAMETERS[(ParameterName.NEGIH_FREQ_LIST) % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_EARFCN_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.EUTRACarrierARFCN' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.EUTRACarrierARFCN' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_QRXLEVMINSIB5_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.QRxLevMinSIB5' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.QRxLevMinSIB5' % i, False,
             TrParameterType.INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_Q_OFFSETRANGE_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.QOffsetFreq' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.QOffsetFreq' % i, False,
             TrParameterType.INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_TRESELECTIONEUTRA_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.TReselectionEUTRA' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.TReselectionEUTRA' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_RESELECTIONPRIORITY_N % i] = TrParam(
             FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.CellReselectionPriority' % i,
-            True,
+            False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_RESELTHRESHHIGH_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.ThreshXHigh' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.ThreshXHigh' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_RESELTHRESHLOW_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.ThreshXLow' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.ThreshXLow' % i, False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_PMAX_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.PMax' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.PMax' % i, False,
             TrParameterType.INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_TRESELECTIONEUTRASFMEDIUM_N % i] = TrParam(
             FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.TReselectionEUTRASFMedium' % i,
-            True,
+            False,
             TrParameterType.UNSIGNED_INT, False,
         )
         PARAMETERS[ParameterName.NEIGHBOR_FREQ_ENABLE_N % i] = TrParam(
-            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.Enable' % i, True,
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.Carrier.%d.Enable' % i, False,
             TrParameterType.BOOLEAN, False,
 
         )

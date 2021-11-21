@@ -177,6 +177,14 @@ class BaicellsQAFATrDataModel(DataModel):
         ParameterName.MME_PORT: TrParam(FAPSERVICE_PATH + 'FAPControl.LTE.Gateway.S1SigLinkPort', True, TrParameterType.INT, False),
         # This parameter is standard but doesn't exist
         # ParameterName.NUM_PLMNS: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNListNumberOfEntries', True, TrParameterType.INT, False),
+        ParameterName.NUM_LTE_NEIGHBOR_FREQ: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.InterFreq.CarrierNumberOfEntries', True,
+            TrParameterType.INT, False,
+        ),
+        ParameterName.NUM_LTE_NEIGHBOR_CELL: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.NeighborList.LTECellNumberOfEntries', True, TrParameterType.INT,
+            False,
+        ),
         ParameterName.TAC: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.TAC', True, TrParameterType.INT, False),
         ParameterName.IP_SEC_ENABLE: TrParam('boardconf.ipsec.ipsecConfig.onBoot', False, TrParameterType.BOOLEAN, False),
 
@@ -189,6 +197,9 @@ class BaicellsQAFATrDataModel(DataModel):
         ParameterName.PERF_MGMT_UPLOAD_INTERVAL: TrParam(DEVICE_PATH + 'FAP.PerfMgmt.Config.PeriodicUploadInterval', False, TrParameterType.INT, False),
         ParameterName.PERF_MGMT_UPLOAD_URL: TrParam(DEVICE_PATH + 'FAP.PerfMgmt.Config.URL', False, TrParameterType.STRING, False),
     }
+
+    NUM_NEIGHBOR_CELL_CONFIG = 16
+    NUM_NEIGHBOR_FREQ_CONFIG = 8
 
     NUM_PLMNS_IN_CONFIG = 6
     TRANSFORMS_FOR_ENB = {
@@ -233,6 +244,14 @@ class BaicellsQAFATrDataModel(DataModel):
     @classmethod
     def get_num_plmns(cls) -> int:
         return cls.NUM_PLMNS_IN_CONFIG
+
+    @classmethod
+    def get_num_neighbor_freq(cls) -> int:
+        return cls.NUM_NEIGHBOR_FREQ_CONFIG
+
+    @classmethod
+    def get_num_neighbor_cell(cls) -> int:
+        return cls.NUM_NEIGHBOR_CELL_CONFIG
 
     @classmethod
     def get_parameter_names(cls) -> List[ParameterName]:

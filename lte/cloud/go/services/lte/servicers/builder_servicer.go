@@ -454,7 +454,6 @@ func getNeighborCell(enbConfig *lte_models.EnodebConfig) map[string]*lte_mconfig
 	if enbConfig.ConfigType == "MANAGED" {
 		cellularNeighborCell := enbConfig.ManagedConfig.NeighborCellList
 		ret := make(map[string]*lte_mconfig.EnodebD_EnodebConfigNeighborCellTable, len(cellularNeighborCell))
-		// if cellularNeighborCell != nil {
 		for _, neighbor := range cellularNeighborCell {
 			enbNeighborCell := &lte_mconfig.EnodebD_EnodebConfigNeighborCellTable{}
 			enbNeighborCell.Index = neighbor.Index
@@ -469,7 +468,6 @@ func getNeighborCell(enbConfig *lte_models.EnodebConfig) map[string]*lte_mconfig
 			index := strconv.Itoa(int(neighbor.Index))
 			ret[index] = enbNeighborCell
 		}
-		// }
 		return ret
 	}
 	return nil
@@ -479,7 +477,6 @@ func getNeighborFreq(enbConfig *lte_models.EnodebConfig) map[string]*lte_mconfig
 	if enbConfig.ConfigType == "MANAGED" {
 		cellularNeighborFreq := enbConfig.ManagedConfig.NeighborFreqList
 		ret := make(map[string]*lte_mconfig.EnodebD_EnodebConfigNeighborFreqTable, len(cellularNeighborFreq))
-		// if cellularNeighborCell != nil {
 		for _, neighbor := range cellularNeighborFreq {
 			enbNeighborFreq := &lte_mconfig.EnodebD_EnodebConfigNeighborFreqTable{}
 			enbNeighborFreq.Index = neighbor.Index
@@ -493,11 +490,9 @@ func getNeighborFreq(enbConfig *lte_models.EnodebConfig) map[string]*lte_mconfig
 			enbNeighborFreq.ReselThreshHigh = neighbor.ReselThreshHigh
 			enbNeighborFreq.ReselThreshLow = neighbor.ReselThreshLow
 			enbNeighborFreq.ReselectionPriority = neighbor.ReselectionPriority
-
 			index := strconv.Itoa(int(neighbor.Index))
 			ret[index] = enbNeighborFreq
 		}
-		// }
 		return ret
 	}
 	return nil
