@@ -35,9 +35,11 @@ import NetworkDashboard from '../../views/network/NetworkDashboard';
 import PeopleIcon from '@material-ui/icons/People';
 import PublicIcon from '@material-ui/icons/Public';
 import RouterIcon from '@material-ui/icons/Router';
+import SasConfig from './SasConfig';
 import SettingsCellIcon from '@material-ui/icons/SettingsCell';
 import SettingsInputAntennaIcon from '@material-ui/icons/SettingsInputAntenna';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
+import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream';
 import SubscriberDashboard from '../../views/subscriber/SubscriberOverview';
 import Subscribers from '../Subscribers';
 import TracingDashboard from '../../views/tracing/TracingDashboard';
@@ -66,7 +68,7 @@ export function getLteSections(
       {
         path: 'subscribers',
         label: 'Subscribers',
-        icon: <PeopleIcon />,
+        icon: <SettingsSystemDaydreamIcon />,
         component: Subscribers,
       },
       {
@@ -151,6 +153,12 @@ export function getLteSectionsV2(alertsEnabled: boolean): SectionsConfigs {
         label: 'Metrics',
         icon: <ShowChartIcon />,
         component: LteMetrics,
+      },
+      {
+        path: 'sasConfig',
+        label: 'SAS',
+        icon: <ShowChartIcon />,
+        component: SasConfig,
       },
     ],
   ];
