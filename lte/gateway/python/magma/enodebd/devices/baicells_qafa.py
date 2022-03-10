@@ -139,55 +139,139 @@ class BaicellsQAFATrDataModel(DataModel):
       read from eNodeB state.
     - Num PLMNs is not reported by these units
     """
+    # Parameters to query when reading eNodeB config
+    LOAD_PARAMETERS = [ParameterName.DEVICE]
     # Mapping of TR parameter paths to aliases
     DEVICE_PATH = 'InternetGatewayDevice.'
     FAPSERVICE_PATH = DEVICE_PATH + 'Services.FAPService.1.'
     EEPROM_PATH = 'boardconf.status.eepromInfo.'
     PARAMETERS = {
         # Top-level objects
-        ParameterName.DEVICE: TrParam(DEVICE_PATH, True, TrParameterType.OBJECT, False),
-        ParameterName.FAP_SERVICE: TrParam(FAPSERVICE_PATH, True, TrParameterType.OBJECT, False),
+        ParameterName.DEVICE: TrParam(
+            path=DEVICE_PATH,
+            is_invasive=True, type=TrParameterType.OBJECT, is_optional=False,
+        ),
+        ParameterName.FAP_SERVICE: TrParam(
+            path=FAPSERVICE_PATH,
+            is_invasive=True, type=TrParameterType.OBJECT, is_optional=False,
+        ),
 
+        # Device info parameters
         # Qualcomm units do not expose MME_Status (We assume that the eNB is broadcasting state is connected to the MME)
-        ParameterName.MME_STATUS: TrParam(FAPSERVICE_PATH + 'FAPControl.LTE.OpState', True, TrParameterType.BOOLEAN, False),
-        ParameterName.GPS_LAT: TrParam(DEVICE_PATH + 'FAP.GPS.latitude', True, TrParameterType.STRING, False),
-        ParameterName.GPS_LONG: TrParam(DEVICE_PATH + 'FAP.GPS.longitude', True, TrParameterType.STRING, False),
-        ParameterName.SW_VERSION: TrParam(DEVICE_PATH + 'DeviceInfo.SoftwareVersion', True, TrParameterType.STRING, False),
-        ParameterName.SERIAL_NUMBER: TrParam(DEVICE_PATH + 'DeviceInfo.SerialNumber', True, TrParameterType.STRING, False),
+        ParameterName.MME_STATUS: TrParam(
+            path=FAPSERVICE_PATH + 'FAPControl.LTE.OpState',
+            is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
+        ),
+        ParameterName.GPS_LAT: TrParam(
+            path=DEVICE_PATH + 'FAP.GPS.latitude',
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.GPS_LONG: TrParam(
+            path=DEVICE_PATH + 'FAP.GPS.longitude',
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.SW_VERSION: TrParam(
+            path=DEVICE_PATH + 'DeviceInfo.SoftwareVersion',
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.SERIAL_NUMBER: TrParam(
+            path=DEVICE_PATH + 'DeviceInfo.SerialNumber',
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
 
         # Capabilities
-        ParameterName.DUPLEX_MODE_CAPABILITY: TrParam(EEPROM_PATH + 'div_multiple', True, TrParameterType.STRING, False),
-        ParameterName.BAND_CAPABILITY: TrParam(EEPROM_PATH + 'work_mode', True, TrParameterType.STRING, False),
+        ParameterName.DUPLEX_MODE_CAPABILITY: TrParam(
+            path=EEPROM_PATH + 'div_multiple',
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.BAND_CAPABILITY: TrParam(
+            path=EEPROM_PATH + 'work_mode',
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
 
         # RF-related parameters
-        ParameterName.EARFCNDL: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.RAN.RF.EARFCNDL', True, TrParameterType.INT, False),
-        ParameterName.PCI: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.RAN.RF.PhyCellID', True, TrParameterType.INT, False),
-        ParameterName.DL_BANDWIDTH: TrParam(DEVICE_PATH + 'Services.RfConfig.1.RfCarrierCommon.carrierBwMhz', True, TrParameterType.INT, False),
-        ParameterName.SUBFRAME_ASSIGNMENT: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.RAN.PHY.TDDFrame.SubFrameAssignment', True, 'bool', False),
-        ParameterName.SPECIAL_SUBFRAME_PATTERN: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.RAN.PHY.TDDFrame.SpecialSubframePatterns', True, TrParameterType.INT, False),
-        ParameterName.CELL_ID: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Common.CellIdentity', True, TrParameterType.UNSIGNED_INT, False),
+        ParameterName.EARFCNDL: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.RF.EARFCNDL',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
+        ParameterName.PCI: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.RF.PhyCellID',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
+        ParameterName.DL_BANDWIDTH: TrParam(
+            path=DEVICE_PATH + 'Services.RfConfig.1.RfCarrierCommon.carrierBwMhz',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
+        ParameterName.SUBFRAME_ASSIGNMENT: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.PHY.TDDFrame.SubFrameAssignment',
+            is_invasive=True, type='bool', is_optional=False,
+        ),
+        ParameterName.SPECIAL_SUBFRAME_PATTERN: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.PHY.TDDFrame.SpecialSubframePatterns',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
+        ParameterName.CELL_ID: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Common.CellIdentity',
+            is_invasive=True, type=TrParameterType.UNSIGNED_INT, is_optional=False,
+        ),
 
         # Other LTE parameters
-        ParameterName.ADMIN_STATE: TrParam(FAPSERVICE_PATH + 'FAPControl.LTE.AdminState', False, TrParameterType.STRING, False),
-        ParameterName.OP_STATE: TrParam(FAPSERVICE_PATH + 'FAPControl.LTE.OpState', True, TrParameterType.BOOLEAN, False),
-        ParameterName.RF_TX_STATUS: TrParam(FAPSERVICE_PATH + 'FAPControl.LTE.OpState', True, TrParameterType.BOOLEAN, False),
+        ParameterName.ADMIN_STATE: TrParam(
+            path=FAPSERVICE_PATH + 'FAPControl.LTE.AdminState',
+            is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.OP_STATE: TrParam(
+            path=FAPSERVICE_PATH + 'FAPControl.LTE.OpState',
+            is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
+        ),
+        ParameterName.RF_TX_STATUS: TrParam(
+            path=FAPSERVICE_PATH + 'FAPControl.LTE.OpState',
+            is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
+        ),
 
         # Core network parameters
-        ParameterName.MME_IP: TrParam(FAPSERVICE_PATH + 'FAPControl.LTE.Gateway.S1SigLinkServerList', True, TrParameterType.STRING, False),
-        ParameterName.MME_PORT: TrParam(FAPSERVICE_PATH + 'FAPControl.LTE.Gateway.S1SigLinkPort', True, TrParameterType.INT, False),
+        ParameterName.MME_IP: TrParam(
+            path=FAPSERVICE_PATH + 'FAPControl.LTE.Gateway.S1SigLinkServerList',
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.MME_PORT: TrParam(
+            path=FAPSERVICE_PATH + 'FAPControl.LTE.Gateway.S1SigLinkPort',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
         # This parameter is standard but doesn't exist
         # ParameterName.NUM_PLMNS: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNListNumberOfEntries', True, TrParameterType.INT, False),
-        ParameterName.TAC: TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.TAC', True, TrParameterType.INT, False),
-        ParameterName.IP_SEC_ENABLE: TrParam('boardconf.ipsec.ipsecConfig.onBoot', False, TrParameterType.BOOLEAN, False),
+        ParameterName.TAC: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.EPC.TAC',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
+        ParameterName.IP_SEC_ENABLE: TrParam(
+            path='boardconf.ipsec.ipsecConfig.onBoot',
+            is_invasive=False, type=TrParameterType.BOOLEAN, is_optional=False,
+        ),
 
         # Management server parameters
-        ParameterName.PERIODIC_INFORM_ENABLE: TrParam(DEVICE_PATH + 'ManagementServer.PeriodicInformEnable', False, TrParameterType.BOOLEAN, False),
-        ParameterName.PERIODIC_INFORM_INTERVAL: TrParam(DEVICE_PATH + 'ManagementServer.PeriodicInformInterval', False, TrParameterType.INT, False),
+        ParameterName.PERIODIC_INFORM_ENABLE: TrParam(
+            path=DEVICE_PATH + 'ManagementServer.PeriodicInformEnable',
+            is_invasive=False, type=TrParameterType.BOOLEAN, is_optional=False,
+        ),
+        ParameterName.PERIODIC_INFORM_INTERVAL: TrParam(
+            path=DEVICE_PATH + 'ManagementServer.PeriodicInformInterval',
+            is_invasive=False, type=TrParameterType.INT, is_optional=False,
+        ),
 
         # Performance management parameters
-        ParameterName.PERF_MGMT_ENABLE: TrParam(DEVICE_PATH + 'FAP.PerfMgmt.Config.Enable', False, TrParameterType.BOOLEAN, False),
-        ParameterName.PERF_MGMT_UPLOAD_INTERVAL: TrParam(DEVICE_PATH + 'FAP.PerfMgmt.Config.PeriodicUploadInterval', False, TrParameterType.INT, False),
-        ParameterName.PERF_MGMT_UPLOAD_URL: TrParam(DEVICE_PATH + 'FAP.PerfMgmt.Config.URL', False, TrParameterType.STRING, False),
+        ParameterName.PERF_MGMT_ENABLE: TrParam(
+            path=DEVICE_PATH + 'FAP.PerfMgmt.Config.Enable',
+            is_invasive=False, type=TrParameterType.BOOLEAN, is_optional=False,
+        ),
+        ParameterName.PERF_MGMT_UPLOAD_INTERVAL: TrParam(
+            path=DEVICE_PATH + 'FAP.PerfMgmt.Config.PeriodicUploadInterval',
+            is_invasive=False, type=TrParameterType.INT, is_optional=False,
+        ),
+        ParameterName.PERF_MGMT_UPLOAD_URL: TrParam(
+            path=DEVICE_PATH + 'FAP.PerfMgmt.Config.URL',
+            is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
     }
 
     NUM_PLMNS_IN_CONFIG = 6
@@ -196,11 +280,26 @@ class BaicellsQAFATrDataModel(DataModel):
     }
     for i in range(1, NUM_PLMNS_IN_CONFIG + 1):
         TRANSFORMS_FOR_ENB[ParameterName.PLMN_N_CELL_RESERVED % i] = transform_for_enb.cell_reserved
-        PARAMETERS[ParameterName.PLMN_N % i] = TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.' % i, True, TrParameterType.STRING, False)
-        PARAMETERS[ParameterName.PLMN_N_CELL_RESERVED % i] = TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.CellReservedForOperatorUse' % i, True, TrParameterType.STRING, False)
-        PARAMETERS[ParameterName.PLMN_N_ENABLE % i] = TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.Enable' % i, True, TrParameterType.BOOLEAN, False)
-        PARAMETERS[ParameterName.PLMN_N_PRIMARY % i] = TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.IsPrimary' % i, True, TrParameterType.BOOLEAN, False)
-        PARAMETERS[ParameterName.PLMN_N_PLMNID % i] = TrParam(FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.PLMNID' % i, True, TrParameterType.STRING, False)
+        PARAMETERS[ParameterName.PLMN_N % i] = TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.' % i,
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        )
+        PARAMETERS[ParameterName.PLMN_N_CELL_RESERVED % i] = TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.CellReservedForOperatorUse' % i,
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        )
+        PARAMETERS[ParameterName.PLMN_N_ENABLE % i] = TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.Enable' % i,
+            is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
+        )
+        PARAMETERS[ParameterName.PLMN_N_PRIMARY % i] = TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.IsPrimary' % i,
+            is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
+        )
+        PARAMETERS[ParameterName.PLMN_N_PLMNID % i] = TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.EPC.PLMNList.%d.PLMNID' % i,
+            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        )
 
     TRANSFORMS_FOR_ENB[ParameterName.ADMIN_STATE] = transform_for_enb.admin_state
     TRANSFORMS_FOR_MAGMA = {
@@ -269,3 +368,4 @@ class BaicellsQAFATrConfigurationInitializer(EnodebConfigurationPostProcessor):
     def postprocess(self, mconfig: Any, service_cfg: Any, desired_cfg: EnodebConfiguration) -> None:
 
         desired_cfg.delete_parameter(ParameterName.ADMIN_STATE)
+        desired_cfg.set_parameter(ParameterName.PERF_MGMT_UPLOAD_INTERVAL, 900)
