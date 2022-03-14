@@ -15,7 +15,11 @@ from typing import Any, Callable, Dict, List, Optional, Type
 
 from magma.common.service import MagmaService
 from magma.enodebd.data_models import transform_for_enb, transform_for_magma
-from magma.enodebd.data_models.data_model import DataModel, TrParam
+from magma.enodebd.data_models.data_model import (
+    DataModel,
+    InvalidTrParamPath,
+    TrParam,
+)
 from magma.enodebd.data_models.data_model_parameters import (
     ParameterName,
     TrParameterType,
@@ -33,6 +37,7 @@ from magma.enodebd.state_machines.enb_acs_impl import BasicEnodebAcsStateMachine
 from magma.enodebd.state_machines.enb_acs_states import (
     AddObjectsState,
     DeleteObjectsState,
+    EnbSendDownloadState,
     EnbSendRebootState,
     EndSessionState,
     EnodebAcsState,
@@ -41,6 +46,7 @@ from magma.enodebd.state_machines.enb_acs_states import (
     GetRPCMethodsState,
     SendGetTransientParametersState,
     SetParameterValuesState,
+    WaitDownloadResponseState,
     WaitEmptyMessageState,
     WaitGetParametersState,
     WaitInformMRebootState,
@@ -60,6 +66,19 @@ class BaicellsQAFAHandler(BasicEnodebAcsStateMachine):
 
     def reboot_asap(self) -> None:
         self.transition('reboot')
+
+    def download_asap(
+        self, url: str, user_name: str, password: str, target_file_name: str, file_size: int,
+        md5: str,
+    ) -> None:
+        if url is not None:
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_URL, url)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_USER, user_name)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_PASSWORD, password)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_FILENAME, target_file_name)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_FILESIZE, file_size)
+            self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_MD5, md5)
+        self.transition('download')
 
     def is_enodeb_connected(self) -> bool:
         return not isinstance(self.state, WaitInformState)
@@ -85,6 +104,13 @@ class BaicellsQAFAHandler(BasicEnodebAcsStateMachine):
             'reboot': EnbSendRebootState(self, when_done='wait_reboot'),
             'wait_reboot': WaitRebootResponseState(self, when_done='wait_post_reboot_inform'),
             'wait_post_reboot_inform': WaitInformMRebootState(self, when_done='wait_empty', when_timeout='wait_inform'),
+            'download': EnbSendDownloadState(self, when_done='wait_download'),
+            'wait_download': WaitDownloadResponseState(self, when_done='wait_inform_post_download'),
+            'wait_inform_post_download': WaitInformState(self, when_done='wait_empty_post_download', when_boot=None),
+            'wait_empty_post_download': WaitEmptyMessageState(
+                self, when_done='get_transient_params',
+                when_missing='check_optional_params',
+            ),
             # The states below are entered when an unexpected message type is
             # received
             'unexpected_fault': ErrorState(self, inform_transition_target='wait_inform'),
@@ -272,6 +298,32 @@ class BaicellsQAFATrDataModel(DataModel):
             path=DEVICE_PATH + 'FAP.PerfMgmt.Config.URL',
             is_invasive=False, type=TrParameterType.STRING, is_optional=False,
         ),
+
+        # download params that don't have tr69 representation.
+        ParameterName.DOWNLOAD_URL: TrParam(
+            path=InvalidTrParamPath,
+            is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.DOWNLOAD_USER: TrParam(
+            path=InvalidTrParamPath,
+            is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.DOWNLOAD_PASSWORD: TrParam(
+            path=InvalidTrParamPath,
+            is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.DOWNLOAD_FILENAME: TrParam(
+            path=InvalidTrParamPath,
+            is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.DOWNLOAD_FILESIZE: TrParam(
+            path=InvalidTrParamPath,
+            is_invasive=False, type=TrParameterType.UNSIGNED_INT, is_optional=False,
+        ),
+        ParameterName.DOWNLOAD_MD5: TrParam(
+            path=InvalidTrParamPath,
+            is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
     }
 
     NUM_PLMNS_IN_CONFIG = 6
@@ -341,9 +393,9 @@ class BaicellsQAFATrDataModel(DataModel):
         ]
         names = list(
             filter(
-                lambda x: (not str(x).startswith('PLMN'))
-                and (str(x) not in excluded_params),
-                cls.PARAMETERS.keys(),
+                lambda x: (not str(x).startswith('PLMN')) and (not str(x).startswith('Download')) and (
+                    str(x) not in excluded_params
+                ), cls.PARAMETERS.keys(),
             ),
         )
         return names
