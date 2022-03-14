@@ -16,6 +16,7 @@ limitations under the License.
 import argparse
 
 from lte.protos.enodebd_pb2 import (
+    DownloadRequest,
     EnodebIdentity,
     GetParameterRequest,
     SetParameterRequest,
@@ -70,6 +71,19 @@ def reboot_enodeb(client, args):
     req = EnodebIdentity()
     req.device_serial = args.device_serial
     client.Reboot(req)
+
+
+@grpc_wrapper
+def download_enodeb(client, args):
+    req = DownloadRequest()
+    req.device_serial = args.device_serial
+    req.url = args.url
+    req.user_name = args.user_name
+    req.password = args.password
+    req.file_size = args.file_size
+    req.md5 = args.md5
+    req.target_file_name = args.target_file_name
+    client.Download(req)
 
 
 @grpc_wrapper
@@ -264,6 +278,33 @@ def create_parser():
     parser_get_enb_status.add_argument(
         'device_serial', help='eNodeB Serial ID',
     )
+    parser_download_enodeb = subparsers.add_parser(
+        'download_enodeb', help='eNodeb Download',
+    )
+    parser_download_enodeb.add_argument(
+        '-device_serial', help='eNodeB Serial ID',
+    )
+    parser_download_enodeb.add_argument(
+        '--file_type', default='1 Firmware Upgrade Image', help='the file type',
+    )
+    parser_download_enodeb.add_argument(
+        '-url', help='download from the http server url',
+    )
+    parser_download_enodeb.add_argument(
+        '-user_name', help='download user account',
+    )
+    parser_download_enodeb.add_argument(
+        '-password', help='download user password',
+    )
+    parser_download_enodeb.add_argument(
+        '-file_size', help='download file size',
+    )
+    parser_download_enodeb.add_argument(
+        '-target_file_name', help='download target file name',
+    )
+    parser_download_enodeb.add_argument(
+        '-md5', help='download file MD5',
+    )
 
     # Add function callbacks
     parser_get_parameter.set_defaults(func=get_parameter)
@@ -274,6 +315,7 @@ def create_parser():
     parser_get_status.set_defaults(func=get_status)
     parser_get_all_status.set_defaults(func=get_all_status)
     parser_get_enb_status.set_defaults(func=get_enb_status)
+    parser_download_enodeb.set_defaults(func=download_enodeb)
     return parser
 
 

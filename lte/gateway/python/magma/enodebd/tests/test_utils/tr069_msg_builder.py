@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from collections import namedtuple
+from datetime import datetime
 from typing import Any, List, Optional
 
 from magma.enodebd.tr069 import models
@@ -95,6 +96,286 @@ class Tr069MessageBuilder:
         msg.ParameterList = models.ParameterValueList()
         msg.ParameterList.ParameterValueStruct = val_list
 
+        return msg
+
+    @classmethod
+    def get_qafa_object_param_values_response(
+            cls,
+    ) -> models.GetParameterValuesResponse:
+        msg = models.GetParameterValuesResponse()
+        param_val_list = []
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.EPC.PLMNList.1.IsPrimary.Invalid',
+                val_type='boolean',
+                data='true',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.EPC.PLMNList.1.CellReservedForOperatorUse.Invalid',
+                val_type='boolean',
+                data='false',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.EPC.PLMNList.1.PLMNID.Invalid',
+                val_type='string',
+                data='00101',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.EPC.PLMNList.1.Enable.Invalid',
+                val_type='boolean',
+                data='true',
+            ),
+        )
+        msg.ParameterList = models.ParameterValueList()
+        msg.ParameterList.ParameterValueStruct = param_val_list
+        return msg
+
+    @classmethod
+    def get_qafa_regular_param_values_response(
+        cls,
+        admin_state: bool = False,
+        earfcndl: int = 39250,
+    ) -> models.GetParameterValuesResponse:
+        msg = models.GetParameterValuesResponse()
+        param_val_list = []
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.RF.DLBandwidth',
+                val_type='string',
+                data='20',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.RF.FreqBandIndicator',
+                val_type='string',
+                data='40',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.ManagementServer.PeriodicInformInterval',
+                val_type='int',
+                data='5',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.CellRestriction.CellReservedForOperatorUse',
+                val_type='boolean',
+                data='false',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.RF.ULBandwidth',
+                val_type='string',
+                data='20',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.RF.ULBandwidth',
+                val_type='int',
+                data='1',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.X_BAICELLS_COM_LTE.EARFCNDLInUse',
+                val_type='string',
+                data=earfcndl,
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.PHY.TDDFrame.SpecialSubframePatterns',
+                val_type='int',
+                data='7',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.Common.CellIdentity',
+                val_type='int',
+                data='138777000',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.RfConfig.1.RfCarrierCommon.carrierBwMhz',
+                val_type='int',
+                data='20',
+            ),
+        )
+        # MME IP
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.FAPControl.LTE.Gateway.S1SigLinkServerList',
+                val_type='string',
+                data='"192.168.60.142"',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.EPC.PLMNListNumberOfEntries',
+                val_type='int',
+                data='1',
+            ),
+        )
+        # perf mgmt enable
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.FAP.PerfMgmt.Config.1.Enable',
+                val_type='boolean',
+                data='true',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.CellRestriction.CellBarred',
+                val_type='boolean',
+                data='false',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.FAP.PerfMgmt.Config.1.PeriodicUploadInterval',
+                val_type='int',
+                data='300',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.FAPControl.LTE.AdminState',
+                val_type='boolean',
+                data='false',
+            ),
+        )
+        # Local gateway enable
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.DeviceInfo.X_BAICELLS_COM_LTE_LGW_Switch',
+                val_type='boolean',
+                data='0',
+            ),
+        )
+        # Perf mgmt upload url
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.FAP.PerfMgmt.Config.1.URL',
+                val_type='string',
+                data='http://192.168.60.142:8081/',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.EPC.TAC',
+                val_type='int',
+                data='1',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.FAPControl.LTE.Gateway.X_BAICELLS_COM_MmePool.Enable',
+                val_type='boolean',
+                data='false',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.PHY.TDDFrame.SubFrameAssignment',
+                val_type='int',
+                data='2',
+            ),
+        )
+        # PCI
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.RF.PhyCellID',
+                val_type='int',
+                data='260',
+            ),
+        )
+        # MME port
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.FAPControl.LTE.Gateway.S1SigLinkPort',
+                val_type='int',
+                data='36412',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='boardconf.ipsec.ipsecConfig.onBoot',
+                val_type='boolean',
+                data='false',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.CellConfig.LTE.RAN.RF.EARFCNDL',
+                val_type='int',
+                data='3100',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.Services.FAPService.1.X_BAICELLS_COM_LTE.EARFCNULInUse',
+                val_type='int',
+                data='3100',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='boardconf.status.eepromInfo.div_multiple',
+                val_type='string',
+                data='02',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='boardconf.status.eepromInfo.work_mode',
+                val_type='string',
+                data='07000000',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.ManagementServer.PeriodicInformEnable',
+                val_type='boolean',
+                data='true',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.FAP.PerfMgmt.Config.Enable',
+                val_type='boolean',
+                data='true',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.FAP.PerfMgmt.Config.PeriodicUploadInterval',
+                val_type='int',
+                data='900',
+            ),
+        )
+        param_val_list.append(
+            cls.get_parameter_value_struct(
+                name='InternetGatewayDevice.FAP.PerfMgmt.Config.URL',
+                val_type='string',
+                data='http://192.168.60.142:8081/',
+            ),
+        )
+        msg.ParameterList = models.ParameterValueList()
+        msg.ParameterList.ParameterValueStruct = param_val_list
         return msg
 
     @classmethod
@@ -1053,3 +1334,11 @@ class Tr069MessageBuilder:
     @classmethod
     def get_reboot_response(cls) -> models.RebootResponse:
         return models.RebootResponse()
+
+    @classmethod
+    def get_download_response(cls) -> models.DownloadResponse:
+        msg = models.DownloadResponse()
+        msg.Status = 0
+        msg.StartTime = datetime.now()
+        msg.CompleteTime = datetime.now()
+        return msg
