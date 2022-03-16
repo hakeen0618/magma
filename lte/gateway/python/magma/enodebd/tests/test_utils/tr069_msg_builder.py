@@ -814,6 +814,10 @@ class Tr069MessageBuilder:
         return msg
 
     @classmethod
+    def get_factory_reset_response(cls) -> models.FactoryResetResponse:
+        return models.FactoryResetResponse()
+
+    @classmethod
     def get_regular_param_values_response(
         cls,
         admin_state: bool = False,

@@ -74,6 +74,11 @@ def reboot_enodeb(client, args):
 
 
 @grpc_wrapper
+def reboot_all_enodeb(client, args):
+    client.RebootAll(Void())
+
+
+@grpc_wrapper
 def download_enodeb(client, args):
     req = DownloadRequest()
     req.device_serial = args.device_serial
@@ -87,8 +92,11 @@ def download_enodeb(client, args):
 
 
 @grpc_wrapper
-def reboot_all_enodeb(client, args):
-    client.RebootAll(Void())
+def factory_reset_enodeb(client, args):
+    """ impl the command line method Send FactoryReset requeset to CPE """
+    req = EnodebIdentity()
+    req.device_serial = args.device_serial
+    client.FactoryReset(req)
 
 
 @grpc_wrapper
@@ -305,6 +313,12 @@ def create_parser():
     parser_download_enodeb.add_argument(
         '-md5', help='download file MD5',
     )
+    parser_factory_reset_enodeb = subparsers.add_parser(
+        'factory_reset_enodeb', help='Factory Reset eNodeb',
+    )
+    parser_factory_reset_enodeb.add_argument(
+        'device_serial', help='eNodeB Serial ID',
+    )
 
     # Add function callbacks
     parser_get_parameter.set_defaults(func=get_parameter)
@@ -316,6 +330,7 @@ def create_parser():
     parser_get_all_status.set_defaults(func=get_all_status)
     parser_get_enb_status.set_defaults(func=get_enb_status)
     parser_download_enodeb.set_defaults(func=download_enodeb)
+    parser_factory_reset_enodeb.set_defaults(func=factory_reset_enodeb)
     return parser
 
 

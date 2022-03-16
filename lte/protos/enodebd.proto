@@ -140,6 +140,9 @@ service Enodebd {
   // Download file to eNodeB
   rpc Download (DownloadRequest) returns (DownloadResponse);
 
+  // factorySet eNodeB
+  rpc FactoryReset (EnodebIdentity) returns (magma.orc8r.Void);
+
   // Get current status
   rpc GetStatus (magma.orc8r.Void) returns (magma.orc8r.ServiceStatus);
 

@@ -89,6 +89,9 @@ export function EnodebDetail() {
                 alignItems="center"
                 spacing={2}>
                 <Grid item>
+                  <EnodebFactoryResetButton />
+                </Grid>
+                <Grid item>
                   <UpgradeEnodebButton />
                 </Grid>
                 <Grid item>
@@ -101,7 +104,23 @@ export function EnodebDetail() {
             label: 'Config',
             to: '/config',
             icon: SettingsIcon,
-            filters: <EnodebRebootButton />,
+            filters: (
+              <Grid
+                container
+                justify="flex-end"
+                alignItems="center"
+                spacing={2}>
+                <Grid item>
+                  <EnodebFactoryResetButton />
+                </Grid>
+                <Grid item>
+                  <UpgradeEnodebButton />
+                </Grid>
+                <Grid item>
+                  <EnodebRebootButton />
+                </Grid>
+              </Grid>
+            ),
           },
         ]}
       />
@@ -119,6 +138,68 @@ export function EnodebDetail() {
     </>
   );
 }
+
+function EnodebFactoryResetButtonInternal(props: WithAlert) {
+  const classes = useStyles();
+  const ctx = useContext(EnodebContext);
+  const {match} = useRouter();
+  const networkId: string = nullthrows(match.params.networkId);
+  const enodebSerial: string = nullthrows(match.params.enodebSerial);
+  const enbInfo = ctx.state.enbInfo[enodebSerial];
+  const gatewayId = enbInfo?.enb_state?.reporting_gateway_id;
+  const enqueueSnackbar = useEnqueueSnackbar();
+
+  const handleClick = () => {
+    if (gatewayId == null) {
+      enqueueSnackbar(
+        'Unable to trigger FactoryReset, reporting gateway not found',
+        {
+          variant: 'error',
+        },
+      );
+      return;
+    }
+
+    props
+      .confirm(`Are you sure you want to FactoryReset ${enodebSerial}?`)
+      .then(async confirmed => {
+        if (!confirmed) {
+          return;
+        }
+        const params = {
+          command: 'factory_reset_enodeb',
+          params: {shell_params: {[enodebSerial]: {}}},
+        };
+
+        try {
+          await RunGatewayCommands({
+            networkId,
+            gatewayId,
+            command: 'generic',
+            params,
+          });
+          enqueueSnackbar('eNodeB FactoryReset triggered successfully', {
+            variant: 'success',
+          });
+        } catch (e) {
+          enqueueSnackbar(e.response?.data?.message ?? e.message, {
+            variant: 'error',
+          });
+        }
+      });
+  };
+
+  return (
+    <Button
+      variant="contained"
+      className={classes.appBarBtn}
+      onClick={handleClick}>
+      FactoryReset
+    </Button>
+  );
+}
+
+const EnodebFactoryResetButton = withAlert(EnodebFactoryResetButtonInternal);
 
 function EnodebRebootButtonInternal(props: WithAlert) {
   const classes = useStyles();

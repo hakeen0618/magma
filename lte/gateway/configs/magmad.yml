@@ -168,6 +168,9 @@ generic_command_config:
     - name: download_enodeb
       command: "enodebd_cli.py download_enodeb -device_serial {}"
       allow_params: True
+    - name: factory_reset_enodeb
+      command: "enodebd_cli.py factory_reset_enodeb {}"
+      allow_params: True
 
 # Services for which magmad grpc status check restart recovery is enabled
 services_to_restart:
