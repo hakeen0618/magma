@@ -101,6 +101,17 @@ class ParameterName():
     DOWNLOAD_MD5 = 'Download md check'
 
 
+class BaicellsParameterName():
+    # X2 enable disable
+    X2_ENABLE_DISABLE = 'x2 enable disable'
+
+    # Radio Power Control config parameters
+    REFERENCE_SIGNAL_POWER = 'Reference Signal Power'
+    POWER_CLASS = 'Power Class'
+    PA = 'Pa'
+    PB = 'Pb'
+
+
 class TrParameterType():
     BOOLEAN = 'boolean'
     STRING = 'string'

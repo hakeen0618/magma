@@ -21,6 +21,7 @@ from magma.enodebd.data_models.data_model import (
     TrParam,
 )
 from magma.enodebd.data_models.data_model_parameters import (
+    BaicellsParameterName,
     ParameterName,
     TrParameterType,
 )
@@ -44,10 +45,12 @@ from magma.enodebd.state_machines.enb_acs_states import (
     ErrorState,
     GetParametersState,
     GetRPCMethodsState,
+    SendFactoryResetState,
     SendGetTransientParametersState,
     SetParameterValuesState,
     WaitDownloadResponseState,
     WaitEmptyMessageState,
+    WaitFactoryResetResponseState,
     WaitGetParametersState,
     WaitInformMRebootState,
     WaitInformState,
@@ -80,6 +83,13 @@ class BaicellsQAFAHandler(BasicEnodebAcsStateMachine):
             self.desired_cfg.set_parameter(ParameterName.DOWNLOAD_MD5, md5)
         self.transition('download')
 
+    def factory_reset_asap(self) -> None:
+        """
+        Impl to send a request to factoryRest the eNodeB ASAP
+        The eNB will factory reset from this method.
+        """
+        self.transition('factory_reset')
+
     def is_enodeb_connected(self) -> bool:
         return not isinstance(self.state, WaitInformState)
 
@@ -111,6 +121,9 @@ class BaicellsQAFAHandler(BasicEnodebAcsStateMachine):
                 self, when_done='get_transient_params',
                 when_missing='check_optional_params',
             ),
+            'factory_reset': SendFactoryResetState(self, when_done='wait_factory_reset'),
+            'wait_factory_reset': WaitFactoryResetResponseState(self, when_done='wait_inform'),
+
             # The states below are entered when an unexpected message type is
             # received
             'unexpected_fault': ErrorState(self, inform_transition_target='wait_inform'),
@@ -255,6 +268,12 @@ class BaicellsQAFATrDataModel(DataModel):
             is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
         ),
 
+        # RAN parameters
+        BaicellsParameterName.X2_ENABLE_DISABLE: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.X_QUALCOMM_ULTRASON_CONFIG.SelfConfig.X2ConnectionEnabled',
+            is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
+        ),
+
         # Core network parameters
         ParameterName.MME_IP: TrParam(
             path=FAPSERVICE_PATH + 'FAPControl.LTE.Gateway.S1SigLinkServerList',
@@ -323,6 +342,24 @@ class BaicellsQAFATrDataModel(DataModel):
         ParameterName.DOWNLOAD_MD5: TrParam(
             path=InvalidTrParamPath,
             is_invasive=False, type=TrParameterType.STRING, is_optional=False,
+        ),
+
+        # Radio Power config
+        BaicellsParameterName.REFERENCE_SIGNAL_POWER: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.RF.ReferenceSignalPower',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
+        BaicellsParameterName.POWER_CLASS: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.X_QUALCOMM_EXPANDED_POWER_PARAMS.MaxTxPowerExpanded',
+            is_invasive=True, type=TrParameterType.UNSIGNED_INT, is_optional=False,
+        ),
+        BaicellsParameterName.PA: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.PHY.PDSCH.Pa',
+            is_invasive=True, type=TrParameterType.INT, is_optional=False,
+        ),
+        BaicellsParameterName.PB: TrParam(
+            path=FAPSERVICE_PATH + 'CellConfig.LTE.RAN.PHY.PDSCH.Pb',
+            is_invasive=True, type=TrParameterType.UNSIGNED_INT, is_optional=False,
         ),
     }
 
