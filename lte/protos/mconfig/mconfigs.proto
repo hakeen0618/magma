@@ -81,6 +81,7 @@ message EnodebD {
         // X2 Status
         bool x2_enable_disable = 12;
         string mme_ip = 13;
+        HoAlgorithmConfig ho_algorithm_config = 16;
         string mme_pool_1 = 17;
         string mme_pool_2 = 18;
         ManagementServerConfig management_server_config = 19;
@@ -101,7 +102,7 @@ message EnodebD {
           // of integers (value -600, -477, -300, -177, 0, 100, 200, or 300)
           int32 pa = 4;
         }
-        
+
         //management server config
         message ManagementServerConfig {
             string management_server_host = 1;
@@ -118,6 +119,35 @@ message EnodebD {
             uint32 sync_1588_asymmetry = 6;
             bool sync_1588_unicast_enable = 7;
             string sync_1588_unicast_serverIp = 8;
+        }
+
+        message HoAlgorithmConfig {
+            // ho algorithm config
+            uint32 a1_threshold_rsrp = 1;
+            int32 lte_a1_threshold_rsrq = 2;
+            int32 hysteresis = 3;
+            string time_to_trigger = 4;
+            int32 a2_threshold_rsrp = 5;
+            int32 lte_a2_threshold_rsrq = 6;
+            int32 a3_offset = 7;
+            int32 a3_offset_anr = 8;
+            int32 a4_threshold_rsrp = 9;
+            int32 lte_intra_a5_threshold_1_rsrp = 10;
+            int32 lte_intra_a5_threshold_2_rsrp = 11;
+            int32 lte_inter_anr_a5_threshold_1_rsrp = 12;
+            int32 lte_inter_anr_a5_threshold_2_rsrp = 13;
+            uint32 b2_threshold1_rsrp = 14;
+            int32 b2_threshold2_rsrp = 15;
+            uint32 b2_geran_irat_threshold = 16;
+            int32 qrxlevmin_selection = 17;
+            uint32 qrxlevminoffset = 18;
+            uint32 s_intrasearch = 19;
+            uint32 s_nonintrasearch = 20;
+            int32 qrxlevmin_reselection = 21;
+            uint32 reselection_priority = 22;
+            uint32 threshservinglow = 23;
+            string ciphering_algorithm = 24;
+            string integrity_algorithm = 25;
         }
     }
 
