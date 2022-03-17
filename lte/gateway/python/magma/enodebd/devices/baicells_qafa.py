@@ -202,12 +202,16 @@ class BaicellsQAFATrDataModel(DataModel):
             is_invasive=True, type=TrParameterType.BOOLEAN, is_optional=False,
         ),
         ParameterName.GPS_LAT: TrParam(
-            path=DEVICE_PATH + 'FAP.GPS.latitude',
-            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+            DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_Latitude',
+            True, TrParameterType.INT, True
         ),
         ParameterName.GPS_LONG: TrParam(
-            path=DEVICE_PATH + 'FAP.GPS.longitude',
-            is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+            DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_Longitude',
+            True, TrParameterType.INT, True
+        ),
+        ParameterName.GPS_ALTI: TrParam(
+            DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_Height',
+            True, TrParameterType.STRING, True
         ),
         ParameterName.SW_VERSION: TrParam(
             path=DEVICE_PATH + 'DeviceInfo.SoftwareVersion',
@@ -216,6 +220,22 @@ class BaicellsQAFATrDataModel(DataModel):
         ParameterName.SERIAL_NUMBER: TrParam(
             path=DEVICE_PATH + 'DeviceInfo.SerialNumber',
             is_invasive=True, type=TrParameterType.STRING, is_optional=False,
+        ),
+        ParameterName.VENDOR: TrParam(
+            DEVICE_PATH + 'DeviceInfo.ManufacturerOUI',
+            False, TrParameterType.STRING, True
+        ),
+        ParameterName.MODEL_NAME: TrParam(
+            DEVICE_PATH + 'DeviceInfo.ModelName',
+            False, TrParameterType.STRING, True
+        ),
+        ParameterName.RF_STATE: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.RF.X_BAICELLS_COM_RadioEnable',
+            True, TrParameterType.BOOLEAN, False
+        ),
+        ParameterName.UPTIME: TrParam(
+            DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_STATION_RUN_Time',
+            False, TrParameterType.STRING, True
         ),
 
         # Capabilities
@@ -387,6 +407,99 @@ class BaicellsQAFATrDataModel(DataModel):
             TrParam('Device.DeviceInfo.X_COM_1588Unicast_Switch', True, TrParameterType.INT, False),
         BaicellsParameterName.SYNC_1588_UNICAST_SERVERIP:
             TrParam('Device.DeviceInfo.X_COM_1588Unicast_IpAddr', True, TrParameterType.STRING, False),
+        
+        # Ho algorithm
+        BaicellsParameterName.HO_A1_THRESHOLD_RSRP: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.ConnMode.EUTRA.A1ThresholdRSRP', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_A2_THRESHOLD_RSRP: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.ConnMode.EUTRA.A2ThresholdRSRP', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_A3_OFFSET: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.HOVA3Offset', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_A3_OFFSET_ANR: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.ANR.AnrA3Offset', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_A4_THRESHOLD_RSRP: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.LTE.RAN.Mobility.ConnMode.EUTRA.A4ThresholdRSRP', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_LTE_INTRA_A5_THRESHOLD_1_RSRP: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.HOVInterA5Threshold1RSRP', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_LTE_INTRA_A5_THRESHOLD_2_RSRP: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.HOVInterA5Threshold2RSRP', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_LTE_INTER_ANR_A5_THRESHOLD_1_RSRP: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.ANR.InterAnrA5Threshold1RSRP', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_LTE_INTER_ANR_A5_THRESHOLD_2_RSRP: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.ANR.InterAnrA5Threshold2RSRP', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_B2_THRESHOLD1_RSRP: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.IRAT.B2threshold1RsrpHO', True, TrParameterType.UNSIGNED_INT,
+            False,
+        ),
+        BaicellsParameterName.HO_B2_THRESHOLD2_RSRP: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.ConnMode.IRAT.X_BAICELLS_COM_UTRANTDD.B2Threshold2UTRATDDRSCP',
+            True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_B2_GERAN_IRAT_THRESHOLD: TrParam(
+            FAPSERVICE_PATH + 'X_BAICELLS.COM.LTE.IRAT.B2Threshold2Geran', True, TrParameterType.UNSIGNED_INT,
+            False,
+        ),
+        BaicellsParameterName.HO_QRXLEVMIN_SELECTION: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.IntraFreq.QRxLevMinSIB1', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_QRXLEVMINOFFSET: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.IntraFreq.QRxLevMinOffset', True,
+            TrParameterType.UNSIGNED_INT,
+            False,
+        ),
+        BaicellsParameterName.HO_S_INTRASEARCH: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.IntraFreq.SIntraSearch', True,
+            TrParameterType.UNSIGNED_INT,
+            False,
+        ),
+        BaicellsParameterName.HO_S_NONINTRASEARCH: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.IntraFreq.SNonIntraSearch', True,
+            TrParameterType.UNSIGNED_INT,
+            False,
+        ),
+        BaicellsParameterName.HO_QRXLEVMIN_RESELECTION: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.IntraFreq.QRxLevMinSIB3', True, TrParameterType.INT,
+            False,
+        ),
+        BaicellsParameterName.HO_RESELECTION_PRIORITY: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.IntraFreq.CellReselectionPriority', True,
+            TrParameterType.UNSIGNED_INT,
+            False,
+        ),
+        BaicellsParameterName.HO_THRESHSERVINGLOW: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.IdleMode.IntraFreq.ThreshServingLow', True,
+            TrParameterType.UNSIGNED_INT,
+            False,
+        ),
+        BaicellsParameterName.HO_CIPHERING_ALGORITHM: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.EPC.AllowedCipheringAlgorithmList', True, TrParameterType.STRING,
+            False,
+        ),
+        BaicellsParameterName.HO_INTEGRITY_ALGORITHM: TrParam(
+            FAPSERVICE_PATH + 'CellConfig.LTE.EPC.AllowedIntegrityProtectionAlgorithmList', True,
+            TrParameterType.STRING,
+            False,
+        ),
     }
 
     NUM_PLMNS_IN_CONFIG = 6
