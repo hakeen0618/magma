@@ -195,8 +195,8 @@ def get_enb_status(client, args):
     _print_prop_status_line('RF State', enb_status.rf_state)
     _print_str_status_line('SW Version', enb_status.sw_version)
     _print_str_status_line('Uptime', enb_status.uptime)
-  
-    
+
+
 def _print_prop_status_line(header: str, value: int) -> None:
     """ Argument 'value' should be a StatusProperty enum """
     _print_str_status_line(

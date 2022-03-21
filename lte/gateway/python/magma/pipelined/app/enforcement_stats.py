@@ -786,7 +786,7 @@ class EnforcementStatsController(PolicyMixin, RestartMixin, MagmaController):
                     subscriber_id=sid,
                     session_version=rule_version,
                     local_f_teid=local_f_teid_ng,
-                    )
+                )
 
         SessionStateManager.report_session_config_state(
             session_config_dict,

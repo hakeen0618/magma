@@ -117,6 +117,7 @@ GPSTuple = namedtuple(
     ],
 )
 
+
 def update_status_metrics(status: EnodebStatus) -> None:
     """ Update metrics for eNodeB status """
     # Call every second
@@ -589,10 +590,10 @@ def _get_and_cache_gps_coords(enodeb: EnodebAcsStateMachine) -> GPSTuple:
     except ValueError:
         logger.warning('GPS lat/long/alt not understood (%s/%s/%s)', lat, lon, alt)
         return GPSTuple(
-                gps_lat='0',
-                gps_lon='0',
-                gps_alt='0',
-            )
+            gps_lat='0',
+            gps_lon='0',
+            gps_alt='0',
+        )
 
 
 def _get_cached_gps_coords() -> GPSTuple:

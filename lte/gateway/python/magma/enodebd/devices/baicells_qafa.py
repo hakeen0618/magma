@@ -203,15 +203,15 @@ class BaicellsQAFATrDataModel(DataModel):
         ),
         ParameterName.GPS_LAT: TrParam(
             DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_Latitude',
-            True, TrParameterType.INT, True
+            True, TrParameterType.INT, True,
         ),
         ParameterName.GPS_LONG: TrParam(
             DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_Longitude',
-            True, TrParameterType.INT, True
+            True, TrParameterType.INT, True,
         ),
         ParameterName.GPS_ALTI: TrParam(
             DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_Height',
-            True, TrParameterType.STRING, True
+            True, TrParameterType.STRING, True,
         ),
         ParameterName.SW_VERSION: TrParam(
             path=DEVICE_PATH + 'DeviceInfo.SoftwareVersion',
@@ -223,19 +223,19 @@ class BaicellsQAFATrDataModel(DataModel):
         ),
         ParameterName.VENDOR: TrParam(
             DEVICE_PATH + 'DeviceInfo.ManufacturerOUI',
-            False, TrParameterType.STRING, True
+            False, TrParameterType.STRING, True,
         ),
         ParameterName.MODEL_NAME: TrParam(
             DEVICE_PATH + 'DeviceInfo.ModelName',
-            False, TrParameterType.STRING, True
+            False, TrParameterType.STRING, True,
         ),
         ParameterName.RF_STATE: TrParam(
             FAPSERVICE_PATH + 'CellConfig.LTE.RAN.RF.X_BAICELLS_COM_RadioEnable',
-            True, TrParameterType.BOOLEAN, False
+            True, TrParameterType.BOOLEAN, False,
         ),
         ParameterName.UPTIME: TrParam(
             DEVICE_PATH + 'DeviceInfo.X_BAICELLS_COM_STATION_RUN_Time',
-            False, TrParameterType.STRING, True
+            False, TrParameterType.STRING, True,
         ),
 
         # Capabilities
@@ -407,7 +407,7 @@ class BaicellsQAFATrDataModel(DataModel):
             TrParam('Device.DeviceInfo.X_COM_1588Unicast_Switch', True, TrParameterType.INT, False),
         BaicellsParameterName.SYNC_1588_UNICAST_SERVERIP:
             TrParam('Device.DeviceInfo.X_COM_1588Unicast_IpAddr', True, TrParameterType.STRING, False),
-        
+
         # Ho algorithm
         BaicellsParameterName.HO_A1_THRESHOLD_RSRP: TrParam(
             FAPSERVICE_PATH + 'CellConfig.LTE.RAN.Mobility.ConnMode.EUTRA.A1ThresholdRSRP', True, TrParameterType.INT,
