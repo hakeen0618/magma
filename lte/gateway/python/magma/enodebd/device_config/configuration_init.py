@@ -24,6 +24,7 @@ from magma.enodebd.data_models.data_model_parameters import (
     BaicellsParameterName,
     ParameterName,
 )
+from magma.enodebd.data_models.transform_for_enb import unicast_mulit_switch
 from magma.enodebd.device_config.enodeb_config_postprocessor import (
     EnodebConfigurationPostProcessor,
 )

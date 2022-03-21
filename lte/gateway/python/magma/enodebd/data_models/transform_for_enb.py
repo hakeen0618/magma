@@ -24,6 +24,14 @@ INVERT_CELL_RESERVED_MAP = {
     False: 'reserved',
 }
 
+UNICAST_MULTICAST_MAP = {
+    True: 0,  # Multicast
+}
+
+
+def unicast_mulit_switch(value):
+    return UNICAST_MULTICAST_MAP.get(value)
+
 
 def admin_state(flag):
     return 'UP' if flag else 'DOWN'
