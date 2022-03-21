@@ -52,6 +52,8 @@ SingleEnodebConfig = namedtuple(
         'allow_enodeb_transmit',
         'mme_address', 'mme_port',
         'x2_enable_disable', 'power_control',
+        'neighbor_freq_list',
+        'neighbor_cell_list',
     ],
 )
 
@@ -106,6 +108,12 @@ def build_desired_config(
     _set_cell_id(cfg_desired, enb_config.cell_id)
     _set_power_control_config(cfg_desired, enb_config.power_control)
     _set_algorithm_x2_enable_disable(cfg_desired, data_model, enb_config.x2_enable_disable)
+    if enb_config.cell_id:
+        _set_cell_id(cfg_desired, enb_config.cell_id)
+    if enb_config.neighbor_freq_list is not None:
+        _set_neighbor_freq_list(cfg_desired, enb_config.neighbor_freq_list)
+    if enb_config.neighbor_cell_list is not None:
+        _set_neighbor_cell_list(cfg_desired, enb_config.neighbor_cell_list)
     _set_perf_mgmt(
         cfg_desired,
         get_ip_from_if(service_config['tr069']['interface']),
@@ -193,6 +201,8 @@ def _get_enb_config(
     # For fields that are specified per eNB
     power_control_config = None
     x2_enable_disable = None
+    neighbor_freq_list = None
+    neighbor_cell_list = None
     if mconfig.enb_configs_by_serial is not None and \
             len(mconfig.enb_configs_by_serial) > 0:
         enb_serial = \
@@ -208,6 +218,10 @@ def _get_enb_config(
             x2_enable_disable = enb_config.x2_enable_disable
             if enb_config.power_control:
                 power_control_config = enb_config.power_control
+            if enb_config.neighbor_freq_list is not None and len(enb_config.neighbor_freq_list) > 0:
+                neighbor_freq_list = enb_config.neighbor_freq_list
+            if enb_config.neighbor_cell_list is not None and len(enb_config.neighbor_cell_list) > 0:
+                neighbor_cell_list = enb_config.neighbor_cell_list
             duplex_mode = map_earfcndl_to_duplex_mode(earfcndl)
             subframe_assignment = None
             special_subframe_pattern = None
@@ -257,6 +271,8 @@ def _get_enb_config(
         mme_port=None,
         power_control=power_control_config,
         x2_enable_disable=x2_enable_disable,
+        neighbor_freq_list=neighbor_freq_list,
+        neighbor_cell_list=neighbor_cell_list,
     )
     return single_enodeb_config
 
@@ -379,6 +395,133 @@ def _set_tdd_subframe_config(
         ParameterName.SPECIAL_SUBFRAME_PATTERN,
         special_subframe_pattern,
     )
+
+
+def _set_neighbor_cell_list(
+        cfg: EnodebConfiguration,
+        neighbor_cell_list: Any,
+) -> None:
+    """
+    Set the LTE Neighbor cell Params as following parameters:
+     - cfg
+     - neighbor_cell_list
+     - plmn
+     - cell_id
+     - earfcn
+     - pci
+     - tac
+     - q_offset
+     - cio
+    """
+    if neighbor_cell_list and len(neighbor_cell_list) >= 1:
+        for neighbor_cell_x in neighbor_cell_list.values():
+            if neighbor_cell_x.enable:
+                i = neighbor_cell_x.index
+                desired_object_name = BaicellsParameterName.NEIGHBOR_CELL_LIST_N % i
+                cfg.add_object(desired_object_name)
+                if neighbor_cell_x.plmn:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_CELL_PLMN_N % i, neighbor_cell_x.plmn,
+                        desired_object_name,
+                    )
+                if neighbor_cell_x.cell_id:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_CELL_CELL_ID_N % i,
+                        neighbor_cell_x.cell_id,
+                        desired_object_name,
+                    )
+                if neighbor_cell_x.earfcn:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_CELL_EARFCN_N % i,
+                        neighbor_cell_x.earfcn,
+                        desired_object_name,
+                    )
+                if neighbor_cell_x.pci:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_CELL_PCI_N % i, neighbor_cell_x.pci,
+                        desired_object_name,
+                    )
+                if neighbor_cell_x.tac:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_CELL_TAC_N % i, neighbor_cell_x.tac,
+                        desired_object_name,
+                    )
+                if neighbor_cell_x.q_offset:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_CELL_QOFFSET_N % i,
+                        neighbor_cell_x.q_offset,
+                        desired_object_name,
+                    )
+                if neighbor_cell_x.cio:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_CELL_CIO_N % i, neighbor_cell_x.cio,
+                        desired_object_name,
+                    )
+
+
+def _set_neighbor_freq_list(
+        cfg: EnodebConfiguration,
+        neighbor_freq_list: Any,
+) -> None:
+    """
+    Set the LTE Neighbor Freq Params as following parameters:
+     - cfg
+     - neighbor_freq_list
+     - earfcn
+     - q_offset_range
+     - q_rx_lev_min_sib5
+     - p_max
+     - t_reselection_eutra
+     - resel_thresh_high
+     - resel_thresh_low
+     - reselection_priority
+    """
+    if neighbor_freq_list and len(neighbor_freq_list) >= 1:
+        for neighbor_x in neighbor_freq_list.values():
+            if neighbor_x.enable:
+                i = neighbor_x.index
+                object_name = BaicellsParameterName.NEGIH_FREQ_LIST % i
+                cfg.add_object(object_name)
+                if neighbor_x.earfcn:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_EARFCN_N % i, neighbor_x.earfcn,
+                        object_name,
+                    )
+                if neighbor_x.q_offset_range:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_Q_OFFSETRANGE_N % i,
+                        neighbor_x.q_offset_range, object_name,
+                    )
+                if neighbor_x.q_rx_lev_min_sib5:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_QRXLEVMINSIB5_N % i,
+                        neighbor_x.q_rx_lev_min_sib5, object_name,
+                    )
+                if neighbor_x.p_max:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_PMAX_N % i, neighbor_x.p_max,
+                        object_name,
+                    )
+                if neighbor_x.t_reselection_eutra:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_TRESELECTIONEUTRA_N % i,
+                        neighbor_x.t_reselection_eutra, object_name,
+                    )
+                if neighbor_x.resel_thresh_high:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_RESELTHRESHHIGH_N % i,
+                        neighbor_x.resel_thresh_high, object_name,
+                    )
+                if neighbor_x.resel_thresh_low:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_RESELTHRESHLOW_N % i,
+                        neighbor_x.resel_thresh_low, object_name,
+                    )
+                if neighbor_x.reselection_priority:
+                    cfg.set_parameter_for_object(
+                        BaicellsParameterName.NEIGHBOR_FREQ_RESELECTIONPRIORITY_N % i,
+                        neighbor_x.reselection_priority, object_name,
+                    )
 
 
 def _set_management_server(cfg: EnodebConfiguration) -> None:

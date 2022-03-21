@@ -25,6 +25,8 @@ from magma.enodebd.device_config.configuration_init import (
     _set_earfcn_freq_band_mode,
     _set_management_server,
     _set_misc_static_params,
+    _set_neighbor_cell_list,
+    _set_neighbor_freq_list,
     _set_pci,
     _set_perf_mgmt,
     _set_plmnids_tac,
@@ -279,6 +281,134 @@ class qafaEnodebConfigurationFactoryTest(TestCase):
         self.assertEqual(
             self.cfg.get_parameter(BaicellsParameterName.PB), 1,
             'Should support a PB parameter',
+        )
+
+    def test_set_neighbor_freq_list(self):
+        # we only handle neighbor freq list for now
+        mconfig = EnodebConfigBuilder.get_mconfig(EnodebDeviceName.BAICELLS_QAFA)
+        self.device_cfg.set_parameter(
+            ParameterName.SERIAL_NUMBER,
+            '1202000181186TB0006',
+        )
+
+        enb_config = _get_enb_config(mconfig, self.device_cfg)
+        neighbor_freq_list = enb_config \
+            .neighbor_freq_list
+
+        _set_neighbor_freq_list(self.cfg, neighbor_freq_list)
+
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_EARFCN_N % 1, BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List Earfcn should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_PMAX_N % 1, BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List PMax should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_Q_OFFSETRANGE_N % 1, BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List QOffset should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_RESELTHRESHLOW_N % 1, BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List ReselThreshLow should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_RESELTHRESHHIGH_N % 1, BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List ReselThreshHigh should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_TRESELECTIONEUTRA_N % 1, BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List TreslectionEutra should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_QRXLEVMINSIB5_N % 1, BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List qRxLevMinSIB5 should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_FREQ_RESELECTIONPRIORITY_N % 1,
+                BaicellsParameterName.NEGIH_FREQ_LIST % 1,
+            ),
+            'First Neghbor Freq List ReselectionPriority should be exist',
+        )
+
+    def test_set_neighbor_cell_list(self):
+        # We only handle neighbor freq list for now
+        mconfig = EnodebConfigBuilder.get_mconfig(EnodebDeviceName.BAICELLS_QAFA)
+        self.device_cfg.set_parameter(
+            ParameterName.SERIAL_NUMBER,
+            '1202000181186TB0006',
+        )
+        enb_config = _get_enb_config(mconfig, self.device_cfg)
+        neighbor_cell_list = enb_config \
+            .neighbor_cell_list
+
+        # with self.assertRaises(ConfigurationError):
+        _set_neighbor_cell_list(self.cfg, neighbor_cell_list)
+
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_CELL_EARFCN_N % 1,
+                BaicellsParameterName.NEIGHBOR_CELL_LIST_N % 1,
+            ),
+            'First Neghbor Cell List Earfcn should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_CELL_PLMN_N % 1,
+                BaicellsParameterName.NEIGHBOR_CELL_LIST_N % 1,
+            ),
+            'First Neghbor Cell List PLMN should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_CELL_CELL_ID_N % 1,
+                BaicellsParameterName.NEIGHBOR_CELL_LIST_N % 1,
+            ),
+            'First Neghbor Cell List Cell ID should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_CELL_PCI_N % 1,
+                BaicellsParameterName.NEIGHBOR_CELL_LIST_N % 1,
+            ),
+            'First Neghbor Cell List PCI should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_CELL_TAC_N % 1,
+                BaicellsParameterName.NEIGHBOR_CELL_LIST_N % 1,
+            ),
+            'First Neghbor Cell List TAC should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_CELL_QOFFSET_N % 1,
+                BaicellsParameterName.NEIGHBOR_CELL_LIST_N % 1,
+            ),
+            'First Neghbor Cell List Qoffset should be exist',
+        )
+        self.assertTrue(
+            self.cfg.get_parameter_for_object(
+                BaicellsParameterName.NEIGHBOR_CELL_CIO_N % 1,
+                BaicellsParameterName.NEIGHBOR_CELL_LIST_N % 1,
+            ),
+            'First Neghbor Cell List CIO should be exist',
         )
 
 

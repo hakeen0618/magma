@@ -61,6 +61,44 @@ class EnodebConfigBuilder:
                 .power_control.pa = 100
             mconfig.enb_configs_by_serial[device_id] \
                 .power_control.pb = 1
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].earfcn = 3100
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].enable = True
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].index = 1
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].p_max = 6
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].q_offset_range = -24
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].q_rx_lev_min_sib5 = -30
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].resel_thresh_high = 6
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].resel_thresh_low = 5
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].reselection_priority = 1
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_freq_list['1'].t_reselection_eutra = 1
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].plmn = '00101'
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].cell_id = 13575222
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].earfcn = 3101
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].pci = 76
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].tac = 1
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].q_offset = -24
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].cio = -24
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].index = 1
+            mconfig.enb_configs_by_serial[device_id] \
+                .neighbor_cell_list['1'].enable = True
         elif device is EnodebDeviceName.CAVIUM:
             # fdd config
             mconfig.fdd_config.earfcndl = 2405

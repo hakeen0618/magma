@@ -7,6 +7,7 @@ package models
 
 import (
 	"encoding/json"
+	"strconv"
 
 	strfmt "github.com/go-openapi/strfmt"
 
@@ -35,6 +36,12 @@ type EnodebConfiguration struct {
 
 	// earfcndl
 	Earfcndl uint32 `json:"earfcndl,omitempty"`
+
+	// neighbor cell list
+	NeighborCellList []*NeighborCell `json:"neighbor_cell_list"`
+
+	// neighbor frequency list
+	NeighborFrequencyList []*NeighborFrequency `json:"neighbor_frequency_list"`
 
 	// pci
 	// Maximum: 503
@@ -78,6 +85,14 @@ func (m *EnodebConfiguration) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDeviceClass(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNeighborCellList(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateNeighborFrequencyList(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -208,6 +223,56 @@ func (m *EnodebConfiguration) validateDeviceClass(formats strfmt.Registry) error
 	// value enum
 	if err := m.validateDeviceClassEnum("device_class", "body", m.DeviceClass); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *EnodebConfiguration) validateNeighborCellList(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.NeighborCellList) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.NeighborCellList); i++ {
+		if swag.IsZero(m.NeighborCellList[i]) { // not required
+			continue
+		}
+
+		if m.NeighborCellList[i] != nil {
+			if err := m.NeighborCellList[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("neighbor_cell_list" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+func (m *EnodebConfiguration) validateNeighborFrequencyList(formats strfmt.Registry) error {
+
+	if swag.IsZero(m.NeighborFrequencyList) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.NeighborFrequencyList); i++ {
+		if swag.IsZero(m.NeighborFrequencyList[i]) { // not required
+			continue
+		}
+
+		if m.NeighborFrequencyList[i] != nil {
+			if err := m.NeighborFrequencyList[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("neighbor_frequency_list" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
 	}
 
 	return nil
